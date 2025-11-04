@@ -1,23 +1,31 @@
+/**
+ * @fileoverview Photo routes with multer file upload configuration
+ * @requires express
+ * @requires multer
+ * @requires path
+ * @requires ../controllers/photoController
+ * @requires ../middleware/auth
+ */
+
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const photoController = require('../controllers/photoController');
-const { verifyToken } = require('../middleware/auth');
+const {verifyToken} = require('../middleware/auth');
 
-// Configuration de Multer pour l'upload de fichiers
+// Multer storage configuration
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/'); // Dossier où stocker les fichiers
+        cb(null, 'uploads/');
     },
     filename: (req, file, cb) => {
-        // Génère un nom unique : timestamp + nom original
         const uniqueName = Date.now() + '-' + Math.round(Math.random() * 1E9) + path.extname(file.originalname);
         cb(null, uniqueName);
     }
 });
 
-// Filtre pour n'accepter que les images
+// File type validation
 const fileFilter = (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png|gif|webp/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
@@ -30,35 +38,22 @@ const fileFilter = (req, file, cb) => {
     }
 };
 
+// Multer upload configuration
 const upload = multer({
     storage: storage,
     fileFilter: fileFilter,
-    limits: { fileSize: 10 * 1024 * 1024 } // Limite à 10MB
+    limits: {fileSize: 10 * 1024 * 1024}
 });
 
-// ============ ROUTES PUBLIQUES ============
-
-// GET /api/photos - Récupérer toutes les photos
+// Public routes
 router.get('/', photoController.getAllPhotos);
-
-// GET /api/photos/week - Récupérer les photos de la semaine
 router.get('/week', photoController.getWeekPhotos);
-
-// GET /api/photos/tag/:tag - Récupérer les photos par tag
 router.get('/tag/:tag', photoController.getPhotosByTag);
-
-// GET /api/photos/:id - Récupérer une photo par ID
 router.get('/:id', photoController.getPhotoById);
 
-// ============ ROUTES ADMIN (à protéger plus tard) ============
-
-// POST /api/photos - Upload une nouvelle photo
+// Protected routes (authentication required)
 router.post('/', verifyToken, upload.single('photo'), photoController.createPhoto);
-
-// PUT /api/photos/:id - Mettre à jour une photo
 router.put('/:id', verifyToken, photoController.updatePhoto);
-
-// DELETE /api/photos/:id - Supprimer une photo
 router.delete('/:id', verifyToken, photoController.deletePhoto);
 
 module.exports = router;
