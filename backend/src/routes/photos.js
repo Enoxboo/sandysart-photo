@@ -3,6 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const photoController = require('../controllers/photoController');
+const { verifyToken } = require('../middleware/auth');
 
 // Configuration de Multer pour l'upload de fichiers
 const storage = multer.diskStorage({
@@ -52,12 +53,12 @@ router.get('/:id', photoController.getPhotoById);
 // ============ ROUTES ADMIN (à protéger plus tard) ============
 
 // POST /api/photos - Upload une nouvelle photo
-router.post('/', upload.single('photo'), photoController.createPhoto);
+router.post('/', verifyToken, upload.single('photo'), photoController.createPhoto);
 
 // PUT /api/photos/:id - Mettre à jour une photo
-router.put('/:id', photoController.updatePhoto);
+router.put('/:id', verifyToken, photoController.updatePhoto);
 
 // DELETE /api/photos/:id - Supprimer une photo
-router.delete('/:id', photoController.deletePhoto);
+router.delete('/:id', verifyToken, photoController.deletePhoto);
 
 module.exports = router;

@@ -4,6 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const photosRoutes = require('./src/routes/photos');
+const authRoutes = require('./src/routes/auth');
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use('/api/photos', photosRoutes);
+app.use('/api/auth', authRoutes);
 
 app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
