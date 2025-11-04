@@ -3,6 +3,7 @@ const db = require('./src/config/database');
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const photosRoutes = require('./src/routes/photos');
 
 const app = express();
 
@@ -21,6 +22,8 @@ app.get('/api/health', (req, res) => {
         timestamp: new Date().toISOString()
     });
 });
+
+app.use('/api/photos', photosRoutes);
 
 app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
