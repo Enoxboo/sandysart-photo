@@ -25,6 +25,11 @@ db.exec(`
     )
 `);
 
+db.exec(`
+  CREATE INDEX IF NOT EXISTS idx_is_week_photo ON photos(is_week_photo);
+  CREATE INDEX IF NOT EXISTS idx_upload_date ON photos(upload_date);
+`);
+
 console.log('✅ Database initialized successfully');
 
 module.exports = db;
