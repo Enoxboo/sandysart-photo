@@ -8,6 +8,7 @@
 const db = require('../config/database');
 const fs = require('fs');
 const path = require('path');
+const sharp = require('sharp');
 
 /**
  * Retrieve all photos
@@ -81,30 +82,70 @@ exports.getPhotosByTag = (req, res) => {
  * @param {Object} req - Express request object with file upload
  * @param {Object} res - Express response object
  */
-exports.createPhoto = (req, res) => {
+exports.createPhoto = async (req, res) => {
     try {
         if (!req.file) {
-            return res.status(400).json({error: 'No file uploaded'});
+            return res.status(400).json({ error: 'No file uploaded' });
         }
 
-        const {title, description, tags} = req.body;
-        const filename = req.file.filename;
-        const originalName = req.file.originalname;
+        const { title, description, tags } = req.body;
+        const originalFilename = req.file.filename;
+        const originalPath = req.file.path;
 
-        const stmt = db.prepare(`
-            INSERT INTO photos (filename, original_name, title, description, tags)
-            VALUES (?, ?, ?, ?, ?)
-        `);
+        const optimizedFilename = 'optimized-' + originalFilename;
+        const optimizedPath = path.join(__dirname, '../../uploads', optimizedFilename);
 
-        const result = stmt.run(filename, originalName, title || null, description || null, tags || null);
+        try {
+            await sharp(originalPath)
+                .resize(1920, null, {
+                    withoutEnlargement: true,
+                    fit: 'inside'
+                })
+                .jpeg({ quality: 85 })
+                .toFile(optimizedPath);
 
-        res.status(201).json({
-            message: 'Photo uploaded successfully',
-            id: result.lastInsertRowid
-        });
+            fs.unlinkSync(originalPath);
+
+            const stmt = db.prepare(`
+        INSERT INTO photos (filename, original_name, title, description, tags)
+        VALUES (?, ?, ?, ?, ?)
+      `);
+
+            const result = stmt.run(
+                optimizedFilename,
+                req.file.originalname,
+                title || null,
+                description || null,
+                tags || null
+            );
+
+            res.status(201).json({
+                message: 'Photo uploaded and optimized successfully',
+                id: result.lastInsertRowid
+            });
+        } catch (sharpError) {
+            console.error('Error optimizing image:', sharpError);
+            const stmt = db.prepare(`
+        INSERT INTO photos (filename, original_name, title, description, tags)
+        VALUES (?, ?, ?, ?, ?)
+      `);
+
+            const result = stmt.run(
+                originalFilename,
+                req.file.originalname,
+                title || null,
+                description || null,
+                tags || null
+            );
+
+            res.status(201).json({
+                message: 'Photo uploaded (optimization failed, using original)',
+                id: result.lastInsertRowid
+            });
+        }
     } catch (error) {
         console.error('Error creating photo:', error);
-        res.status(500).json({error: 'Failed to create photo'});
+        res.status(500).json({ error: 'Failed to create photo' });
     }
 };
 
