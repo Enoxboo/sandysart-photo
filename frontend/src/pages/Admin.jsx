@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useCallback} from 'react';
 import {login, verifyToken, getAllPhotos, uploadPhoto, updatePhoto, deletePhoto} from '../services/api';
 import './Admin.css';
 
@@ -22,17 +22,17 @@ function Admin() {
     // Vérifier si l'utilisateur est déjà connecté au chargement
     useEffect(() => {
         checkAuth();
-    }, []);
+    }, [checkAuth]);
 
     // Charger les photos si authentifié
     useEffect(() => {
         if (isAuthenticated) {
             loadPhotos();
         }
-    }, [isAuthenticated]);
+    }, [isAuthenticated, loadPhotos]);
 
     // Vérifier le token dans le localStorage
-    const checkAuth = async () => {
+    const checkAuth = useCallback(async () => {
         const token = localStorage.getItem('token');
         if (token) {
             try {
@@ -44,7 +44,7 @@ function Admin() {
             }
         }
         setLoading(false);
-    };
+    }, []);
 
     // Gérer le login
     const handleLogin = async (e) => {
@@ -67,14 +67,14 @@ function Admin() {
     };
 
     // Charger toutes les photos
-    const loadPhotos = async () => {
+    const loadPhotos = useCallback(async () => {
         try {
             const data = await getAllPhotos();
             setPhotos(data);
         } catch (error) {
             console.error('Erreur lors du chargement des photos:', error);
         }
-    };
+    }, []);
 
     // Gérer l'upload d'une photo
     const handleUpload = async (e) => {
