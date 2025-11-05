@@ -99,7 +99,7 @@ exports.createPhoto = async (req, res) => {
 
         try {
             if (ext === '.gif') {
-                optimizedFilename = `optimized-${originalFilename}`;
+                optimizedFilename = `${originalFilename}`;
                 optimizedPath = path.join(__dirname, '../../uploads', optimizedFilename);
                 fs.copyFileSync(originalPath, optimizedPath);
             } else {
@@ -109,16 +109,16 @@ exports.createPhoto = async (req, res) => {
                 });
 
                 if (ext === '.jpg' || ext === '.jpeg') {
-                    optimizedFilename = `optimized-${baseName}.jpg`;
+                    optimizedFilename = `${baseName}.jpg`;
                     sharpInstance = sharpInstance.jpeg({quality: 85});
                 } else if (ext === '.png') {
-                    optimizedFilename = `optimized-${baseName}.png`;
+                    optimizedFilename = `${baseName}.png`;
                     sharpInstance = sharpInstance.png({compressionLevel: 9});
                 } else if (ext === '.webp') {
-                    optimizedFilename = `optimized-${baseName}.webp`;
+                    optimizedFilename = `${baseName}.webp`;
                     sharpInstance = sharpInstance.webp({quality: 85});
                 } else {
-                    optimizedFilename = `optimized-${baseName}.jpg`;
+                    optimizedFilename = `${baseName}.jpg`;
                     sharpInstance = sharpInstance.jpeg({quality: 85});
                 }
 
