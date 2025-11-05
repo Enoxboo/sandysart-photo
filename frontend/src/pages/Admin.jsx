@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
-import { login, verifyToken, getAllPhotos, uploadPhoto, updatePhoto, deletePhoto } from '../services/api';
+import {useState, useEffect} from 'react';
+import {login, verifyToken, getAllPhotos, uploadPhoto, updatePhoto, deletePhoto} from '../services/api';
 import './Admin.css';
 
 function Admin() {
     // États pour l'authentification
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [loginForm, setLoginForm] = useState({ username: '', password: '' });
+    const [loginForm, setLoginForm] = useState({username: '', password: ''});
     const [loginError, setLoginError] = useState('');
 
     // États pour la gestion des photos
@@ -95,7 +95,7 @@ function Admin() {
         try {
             await uploadPhoto(formData);
             setUploadMessage('Photo uploadée avec succès ! ✅');
-            setUploadForm({ photo: null, title: '', description: '', tags: '' });
+            setUploadForm({photo: null, title: '', description: '', tags: ''});
             // Reset le input file
             document.getElementById('photo-input').value = '';
             // Recharger les photos
@@ -153,7 +153,7 @@ function Admin() {
                                 type="text"
                                 id="username"
                                 value={loginForm.username}
-                                onChange={(e) => setLoginForm({ ...loginForm, username: e.target.value })}
+                                onChange={(e) => setLoginForm({...loginForm, username: e.target.value})}
                                 required
                             />
                         </div>
@@ -164,7 +164,7 @@ function Admin() {
                                 type="password"
                                 id="password"
                                 value={loginForm.password}
-                                onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
+                                onChange={(e) => setLoginForm({...loginForm, password: e.target.value})}
                                 required
                             />
                         </div>
@@ -196,7 +196,7 @@ function Admin() {
                             type="file"
                             id="photo-input"
                             accept="image/*"
-                            onChange={(e) => setUploadForm({ ...uploadForm, photo: e.target.files[0] })}
+                            onChange={(e) => setUploadForm({...uploadForm, photo: e.target.files[0]})}
                             required
                         />
                     </div>
@@ -207,7 +207,7 @@ function Admin() {
                             type="text"
                             id="title"
                             value={uploadForm.title}
-                            onChange={(e) => setUploadForm({ ...uploadForm, title: e.target.value })}
+                            onChange={(e) => setUploadForm({...uploadForm, title: e.target.value})}
                         />
                     </div>
 
@@ -216,7 +216,7 @@ function Admin() {
                         <textarea
                             id="description"
                             value={uploadForm.description}
-                            onChange={(e) => setUploadForm({ ...uploadForm, description: e.target.value })}
+                            onChange={(e) => setUploadForm({...uploadForm, description: e.target.value})}
                             rows="3"
                         />
                     </div>
@@ -228,7 +228,7 @@ function Admin() {
                             id="tags"
                             placeholder="grossesse, famille, bébé"
                             value={uploadForm.tags}
-                            onChange={(e) => setUploadForm({ ...uploadForm, tags: e.target.value })}
+                            onChange={(e) => setUploadForm({...uploadForm, tags: e.target.value})}
                         />
                     </div>
 
@@ -248,7 +248,7 @@ function Admin() {
                     <div className="photos-list">
                         {photos.map((photo) => (
                             <div key={photo.id} className="photo-item">
-                                <img src={`/uploads/${photo.filename}`} alt={photo.title || photo.original_name} />
+                                <img src={`/uploads/${photo.filename}`} alt={photo.title || photo.original_name}/>
 
                                 <div className="photo-info">
                                     <h3>{photo.title || 'Sans titre'}</h3>

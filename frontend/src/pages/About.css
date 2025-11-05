@@ -1,0 +1,129 @@
+.about-header {
+    text-align: center;
+    padding: 2rem 0;
+    margin-bottom: 3rem;
+}
+
+.about-header h1 {
+    font-size: 2.5rem;
+    color: #333;
+}
+
+.about-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 3rem;
+    margin-bottom: 3rem;
+}
+
+.about-text {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.about-text h2 {
+    font-size: 1.8rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: #667eea;
+}
+
+.about-text h2:first-of-type {
+    margin-top: 0;
+}
+
+.about-text p {
+    line-height: 1.8;
+    color: #555;
+    margin-bottom: 1rem;
+}
+
+.specialties {
+    list-style: none;
+    padding: 0;
+}
+
+.specialties li {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #f8f9ff;
+    border-left: 4px solid #667eea;
+    border-radius: 4px;
+}
+
+.specialties strong {
+    display: block;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.specialties p {
+    margin: 0;
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.contact-info {
+    background: #f8f9ff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+.contact-info p {
+    margin-bottom: 0.75rem;
+    font-size: 1.05rem;
+}
+
+.contact-info a {
+    color: #667eea;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.contact-info a:hover {
+    text-decoration: underline;
+}
+
+.about-image {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.placeholder-image {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+}
+
+.placeholder-image p:first-child {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.placeholder-image p:nth-child(2) {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+@media (max-width: 968px) {
+    .about-content {
+        grid-template-columns: 1fr;
+    }
+
+    .about-image {
+        min-height: 300px;
+    }
+}
