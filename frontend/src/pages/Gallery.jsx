@@ -146,6 +146,7 @@ function Gallery() {
                                     <img
                                         src={`/uploads/${photo.filename}`}
                                         alt={photo.title || photo.original_name}
+                                        loading="lazy"
                                     />
                                     <div className="gallery-item-overlay">
                                         {photo.title && <h3>{photo.title}</h3>}
