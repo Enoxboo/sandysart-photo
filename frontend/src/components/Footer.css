@@ -1,0 +1,32 @@
+.footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #e0e0e0;
+    margin-top: 3rem;
+}
+
+.footer-content {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: #666;
+}
+
+.footer-content p {
+    margin: 0 0 0.5rem 0;
+}
+
+.footer-legal {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+
+.footer-legal a {
+    color: #667eea;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.footer-legal a:hover {
+    text-decoration: underline;
+    opacity: 1;
+}
