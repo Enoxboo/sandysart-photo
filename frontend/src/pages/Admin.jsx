@@ -19,18 +19,6 @@ function Admin() {
     });
     const [uploadMessage, setUploadMessage] = useState('');
 
-    // Vérifier si l'utilisateur est déjà connecté au chargement
-    useEffect(() => {
-        checkAuth();
-    }, [checkAuth]);
-
-    // Charger les photos si authentifié
-    useEffect(() => {
-        if (isAuthenticated) {
-            loadPhotos();
-        }
-    }, [isAuthenticated, loadPhotos]);
-
     // Vérifier le token dans le localStorage
     const checkAuth = useCallback(async () => {
         const token = localStorage.getItem('token');
@@ -75,6 +63,17 @@ function Admin() {
             console.error('Erreur lors du chargement des photos:', error);
         }
     }, []);
+
+    // Vérifier si l'utilisateur est déjà connecté au chargement
+    useEffect(() => {
+        checkAuth();
+    }, [checkAuth]);
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            loadPhotos();
+        }
+    }, [isAuthenticated, loadPhotos]);
 
     // Gérer l'upload d'une photo
     const handleUpload = async (e) => {
