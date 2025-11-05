@@ -85,31 +85,53 @@ exports.getPhotosByTag = (req, res) => {
 exports.createPhoto = async (req, res) => {
     try {
         if (!req.file) {
-            return res.status(400).json({ error: 'No file uploaded' });
+            return res.status(400).json({error: 'No file uploaded'});
         }
 
-        const { title, description, tags } = req.body;
+        const {title, description, tags} = req.body;
         const originalFilename = req.file.filename;
         const originalPath = req.file.path;
 
-        const optimizedFilename = 'optimized-' + originalFilename;
-        const optimizedPath = path.join(__dirname, '../../uploads', optimizedFilename);
+        const ext = path.extname(originalFilename).toLowerCase();
+        const baseName = path.basename(originalFilename, ext);
+        let optimizedFilename;
+        let optimizedPath;
 
         try {
-            await sharp(originalPath)
-                .resize(1920, null, {
+            if (ext === '.gif') {
+                optimizedFilename = `optimized-${originalFilename}`;
+                optimizedPath = path.join(__dirname, '../../uploads', optimizedFilename);
+                fs.copyFileSync(originalPath, optimizedPath);
+            } else {
+                let sharpInstance = sharp(originalPath).resize(1920, null, {
                     withoutEnlargement: true,
                     fit: 'inside'
-                })
-                .jpeg({ quality: 85 })
-                .toFile(optimizedPath);
+                });
+
+                if (ext === '.jpg' || ext === '.jpeg') {
+                    optimizedFilename = `optimized-${baseName}.jpg`;
+                    sharpInstance = sharpInstance.jpeg({quality: 85});
+                } else if (ext === '.png') {
+                    optimizedFilename = `optimized-${baseName}.png`;
+                    sharpInstance = sharpInstance.png({compressionLevel: 9});
+                } else if (ext === '.webp') {
+                    optimizedFilename = `optimized-${baseName}.webp`;
+                    sharpInstance = sharpInstance.webp({quality: 85});
+                } else {
+                    optimizedFilename = `optimized-${baseName}.jpg`;
+                    sharpInstance = sharpInstance.jpeg({quality: 85});
+                }
+
+                optimizedPath = path.join(__dirname, '../../uploads', optimizedFilename);
+                await sharpInstance.toFile(optimizedPath);
+            }
 
             fs.unlinkSync(originalPath);
 
             const stmt = db.prepare(`
-        INSERT INTO photos (filename, original_name, title, description, tags)
-        VALUES (?, ?, ?, ?, ?)
-      `);
+                INSERT INTO photos (filename, original_name, title, description, tags)
+                VALUES (?, ?, ?, ?, ?)
+            `);
 
             const result = stmt.run(
                 optimizedFilename,
@@ -125,10 +147,11 @@ exports.createPhoto = async (req, res) => {
             });
         } catch (sharpError) {
             console.error('Error optimizing image:', sharpError);
+
             const stmt = db.prepare(`
-        INSERT INTO photos (filename, original_name, title, description, tags)
-        VALUES (?, ?, ?, ?, ?)
-      `);
+                INSERT INTO photos (filename, original_name, title, description, tags)
+                VALUES (?, ?, ?, ?, ?)
+            `);
 
             const result = stmt.run(
                 originalFilename,
@@ -145,7 +168,7 @@ exports.createPhoto = async (req, res) => {
         }
     } catch (error) {
         console.error('Error creating photo:', error);
-        res.status(500).json({ error: 'Failed to create photo' });
+        res.status(500).json({error: 'Failed to create photo'});
     }
 };
 
