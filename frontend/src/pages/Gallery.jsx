@@ -87,8 +87,22 @@ function Gallery() {
     return (
         <div className="container">
             <section className="gallery-header">
-                <h1>Galerie</h1>
-                <p>Découvrez notre portfolio complet</p>
+                <h1>Créez aujourd'hui vos souvenirs de demain</h1>
+                <div className="gallery-intro">
+                    <p>
+                        Je suis Sandy, du Studio Sandy's Art Photographies. Mon approche se veut douce et épurée.
+                        Passionnée par les détails, je mets à profit plus de 15 ans d'expérience pour capturer des
+                        instants authentiques, chargés d'émotion et de sincérité.
+                    </p>
+                    <p>
+                        Mon objectif ? Vous sublimer et rendre vos souvenirs uniques. Chaque image raconte une histoire… La vôtre.
+                    </p>
+                    <p>
+                        Laissez-vous inspirer en explorant mon portfolio. Du shooting nouveau-né, enfants avec des décors
+                        incroyables chaque année, famille, aux séances femmes enceinte, portrait de femme et couple,
+                        je crée des souvenirs qui vous ressemblent.
+                    </p>
+                </div>
             </section>
 
             {/* Filtres par tags */}
