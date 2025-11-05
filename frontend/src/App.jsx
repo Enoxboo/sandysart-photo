@@ -1,9 +1,11 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
+import Footer from './components/Footer';
 import Home from './pages/Home';
 import Gallery from './pages/Gallery';
 import About from './pages/About';
 import Admin from './pages/Admin';
+import RGPD from './pages/RGPD';
 
 function App() {
     return (
@@ -15,11 +17,10 @@ function App() {
                     <Route path="/gallery" element={<Gallery />} />
                     <Route path="/about" element={<About />} />
                     <Route path="/admin" element={<Admin />} />
+                    <Route path="/rgpd" element={<RGPD />} />
                 </Routes>
             </main>
-            <footer style={{ textAlign: 'center', padding: '2rem', color: '#666' }}>
-                <p>© 2025 Sandy's Art Photography - Tous droits réservés</p>
-            </footer>
+            <Footer />
         </BrowserRouter>
     );
 }
