@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { getAllPhotos, getPhotosByTag } from '../services/api';
+import {useState, useEffect, useCallback} from 'react';
+import {getAllPhotos, getPhotosByTag} from '../services/api';
 import './Gallery.css';
 
 function Gallery() {
@@ -10,12 +10,7 @@ function Gallery() {
     const [selectedTag, setSelectedTag] = useState('all');
     const [availableTags, setAvailableTags] = useState([]);
 
-    // Charger toutes les photos au montage
-    useEffect(() => {
-        loadAllPhotos();
-    }, []);
-
-    const loadAllPhotos = async () => {
+    const loadAllPhotos = useCallback(async () => {
         try {
             setLoading(true);
             const data = await getAllPhotos();
@@ -30,7 +25,12 @@ function Gallery() {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    // Charger toutes les photos au montage
+    useEffect(() => {
+        loadAllPhotos();
+    }, [loadAllPhotos]);
 
     // Extraire les tags uniques de toutes les photos
     const extractTags = (photosData) => {
@@ -79,7 +79,7 @@ function Gallery() {
     if (error) {
         return (
             <div className="container">
-                <p style={{ color: 'red' }}>{error}</p>
+                <p style={{color: 'red'}}>{error}</p>
             </div>
         );
     }
@@ -95,10 +95,12 @@ function Gallery() {
                         instants authentiques, chargés d'émotion et de sincérité.
                     </p>
                     <p>
-                        Mon objectif ? Vous sublimer et rendre vos souvenirs uniques. Chaque image raconte une histoire… La vôtre.
+                        Mon objectif ? Vous sublimer et rendre vos souvenirs uniques. Chaque image raconte une histoire…
+                        La vôtre.
                     </p>
                     <p>
-                        Laissez-vous inspirer en explorant mon portfolio. Du shooting nouveau-né, enfants avec des décors
+                        Laissez-vous inspirer en explorant mon portfolio. Du shooting nouveau-né, enfants avec des
+                        décors
                         incroyables chaque année, famille, aux séances femmes enceinte, portrait de femme et couple,
                         je crée des souvenirs qui vous ressemblent.
                     </p>
