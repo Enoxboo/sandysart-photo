@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { getWeekPhotos } from '../services/api';
 import './Home.css';
 
@@ -7,7 +8,6 @@ function Home() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Charger les photos au montage du composant
     useEffect(() => {
         loadPhotos();
     }, []);
@@ -43,57 +43,105 @@ function Home() {
 
     return (
         <div className="container">
+            {/* Hero Section */}
             <section className="hero">
-                <h1>Bienvenue chez Sandy's Art Photography</h1>
-                <p>Capturez vos moments précieux avec passion et professionnalisme</p>
+                <div className="hero-content">
+                    <h1>Capturez vos moments précieux</h1>
+                    <p className="hero-subtitle">
+                        Photographe professionnelle spécialisée dans les portraits de famille,
+                        grossesse et nouveau-nés. Chaque instant mérite d'être immortalisé avec authenticité et émotion.
+                    </p>
+                    <div className="hero-cta">
+                        <Link to="/gallery" className="hero-btn hero-btn-primary">
+                            Découvrir la galerie
+                        </Link>
+                        <Link to="/about" className="hero-btn hero-btn-secondary">
+                            En savoir plus
+                        </Link>
+                    </div>
+                </div>
             </section>
 
+            {/* Photos de la semaine */}
             <section className="week-photos">
-                <h2>Photos de la semaine</h2>
+                <div className="section-header">
+                    <h2>Coups de cœur de la semaine</h2>
+                    <p>Découvrez une sélection de mes photos préférées</p>
+                </div>
+
                 {photos.length === 0 ? (
-                    <p>Aucune photo de la semaine pour le moment.</p>
+                    <p style={{ textAlign: 'center', color: 'var(--text-light)' }}>
+                        Aucune photo de la semaine pour le moment.
+                    </p>
                 ) : (
                     <div className="photos-grid">
                         {photos.map((photo) => (
-                            <div key={photo.id} className="photo-card">
-                                <img
-                                    src={`/uploads/${photo.filename}`}
-                                    alt={photo.title || photo.original_name}
-                                />
-                                {photo.title && <h3>{photo.title}</h3>}
-                                {photo.description && <p>{photo.description}</p>}
-                                {photo.tags && (
-                                    <div className="tags">
-                                        {photo.tags.split(',').map((tag, index) => (
-                                            <span key={index} className="tag">{tag.trim()}</span>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
+                            <article key={photo.id} className="photo-card">
+                                <div className="photo-card-image">
+                                    <img
+                                        src={`/uploads/${photo.filename}`}
+                                        alt={photo.title || photo.original_name}
+                                        loading="lazy"
+                                    />
+                                </div>
+                                <div className="photo-card-content">
+                                    {photo.title && <h3>{photo.title}</h3>}
+                                    {photo.description && <p>{photo.description}</p>}
+                                    {photo.tags && (
+                                        <div className="tags">
+                                            {photo.tags.split(',').map((tag, index) => (
+                                                <span key={index} className="tag">{tag.trim()}</span>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            </article>
                         ))}
                     </div>
                 )}
             </section>
 
+            {/* Services */}
             <section className="services">
-                <h2>Nos services</h2>
+                <div className="section-header">
+                    <h2>Mes spécialités</h2>
+                    <p>Un accompagnement personnalisé pour chaque moment de votre vie</p>
+                </div>
+
                 <div className="services-grid">
                     <div className="service">
-                        <h3>📸 Portraits</h3>
-                        <p>Des portraits qui capturent votre personnalité unique</p>
+                        <span className="service-icon">📸</span>
+                        <h3>Portraits</h3>
+                        <p>Des portraits qui capturent votre essence et votre personnalité unique avec authenticité</p>
                     </div>
                     <div className="service">
-                        <h3>👶 Grossesse & Nouveau-né</h3>
-                        <p>Immortalisez ces moments magiques</p>
+                        <span className="service-icon">🤰</span>
+                        <h3>Grossesse</h3>
+                        <p>Immortalisez cette période magique avec des photos pleines de douceur et d'émotion</p>
                     </div>
                     <div className="service">
-                        <h3>👨‍👩‍👧‍👦 Famille</h3>
-                        <p>Créez des souvenirs familiaux inoubliables</p>
+                        <span className="service-icon">👶</span>
+                        <h3>Nouveau-né</h3>
+                        <p>Capturez les premiers jours de votre bébé avec des clichés tendres et intemporels</p>
                     </div>
                     <div className="service">
-                        <h3>💍 Mariage</h3>
-                        <p>Votre jour spécial capturé avec élégance</p>
+                        <span className="service-icon">👨‍👩‍👧‍👦</span>
+                        <h3>Famille</h3>
+                        <p>Des séances conviviales pour célébrer l'amour et la complicité de votre famille</p>
                     </div>
+                </div>
+            </section>
+            {/* Call to Action */}
+            <section className="cta-section">
+                <div className="cta-content">
+                    <h2>Prête à immortaliser vos souvenirs ?</h2>
+                    <p>
+                        Réservez votre séance photo dès maintenant et créez des souvenirs
+                        qui dureront toute une vie.
+                    </p>
+                    <Link to="/about" className="cta-btn">
+                        Contactez-moi
+                    </Link>
                 </div>
             </section>
         </div>

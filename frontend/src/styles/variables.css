@@ -1,0 +1,44 @@
+/* ============================================
+   VARIABLES GLOBALES - Sandy's Art Photography
+   ============================================ */
+
+:root {
+    /* Palette Terre & Or */
+    --primary: #D4A574;
+    --primary-dark: #B8895E;
+    --secondary: #8B7355;
+    --accent: #F4E4D4;
+    --background: #FDFBF7;
+    --white: #FFFFFF;
+
+    /* Textes */
+    --text-primary: #2C2416;
+    --text-secondary: #5A4D3A;
+    --text-light: #8B7D6B;
+
+    /* Espacements */
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 2rem;
+    --spacing-lg: 3rem;
+    --spacing-xl: 5rem;
+
+    /* Bordures */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 16px;
+
+    /* Ombres */
+    --shadow-sm: 0 2px 8px rgba(44, 36, 22, 0.08);
+    --shadow-md: 0 4px 16px rgba(44, 36, 22, 0.12);
+    --shadow-lg: 0 8px 24px rgba(44, 36, 22, 0.16);
+
+    /* Transitions */
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
+    --transition-slow: 0.5s ease;
+
+    /* Typographie */
+    --font-heading: 'Playfair Display', serif;
+    --font-body: 'Inter', sans-serif;
+}
