@@ -60,6 +60,17 @@ exports.getWeekPhotos = (req, res) => {
     }
 };
 
+// Récupérer les photos hero (pour le carrousel d'accueil)
+exports.getHeroPhotos = (req, res) => {
+    try {
+        const photos = db.prepare('SELECT * FROM photos WHERE is_hero_photo = 1 ORDER BY upload_date DESC').all();
+        res.json(photos);
+    } catch (error) {
+        console.error('Error fetching hero photos:', error);
+        res.status(500).json({error: 'Failed to fetch hero photos'});
+    }
+};
+
 /**
  * Retrieve photos filtered by tag
  * @param {Object} req - Express request object
@@ -116,18 +127,26 @@ exports.createPhoto = (req, res) => {
 exports.updatePhoto = (req, res) => {
     try {
         const {id} = req.params;
-        const {title, description, tags, is_week_photo} = req.body;
+        const {title, description, tags, is_week_photo, is_hero_photo} = req.body;
 
         const stmt = db.prepare(`
             UPDATE photos
             SET title         = ?,
                 description   = ?,
                 tags          = ?,
-                is_week_photo = ?
+                is_week_photo = ?,
+                is_hero_photo = ?
             WHERE id = ?
         `);
 
-        const result = stmt.run(title, description, tags, is_week_photo, id);
+        const result = stmt.run(
+            title || null,
+            description || null,
+            tags || null,
+            is_week_photo || 0,
+            is_hero_photo || 0,
+            id
+        );
 
         if (result.changes === 0) {
             return res.status(404).json({error: 'Photo not found'});

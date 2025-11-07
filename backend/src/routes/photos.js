@@ -48,6 +48,7 @@ const upload = multer({
 // Public routes
 router.get('/', photoController.getAllPhotos);
 router.get('/week', photoController.getWeekPhotos);
+router.get('/hero', photoController.getHeroPhotos);
 router.get('/tag/:tag', photoController.getPhotosByTag);
 router.get('/:id', photoController.getPhotoById);
 
