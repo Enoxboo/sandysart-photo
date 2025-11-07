@@ -99,7 +99,6 @@
 .admin-page {
     min-height: 100vh;
     background: var(--background);
-    padding-top: 80px;
 }
 
 .admin-header {

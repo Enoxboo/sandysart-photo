@@ -20,7 +20,7 @@ function Header() {
             <div className="container">
                 <nav className="nav">
                     <Link to="/" className="logo">
-                        <h1>Sandy's Art</h1>
+                        <h1>Sandy's Art Photographies</h1>
                     </Link>
 
                     <ul className="nav-links">
