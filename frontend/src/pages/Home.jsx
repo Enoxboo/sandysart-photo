@@ -122,6 +122,7 @@ function Home() {
 
                         <div className="hero-overlay">
                             <h1>Sandy's Art</h1>
+                            <h1>Photographies</h1>
                             <p>Photographe de l'émotion et de l'authenticité</p>
                             <Link to="/gallery" className="btn btn-light">
                                 Découvrir mon travail
@@ -145,6 +146,7 @@ function Home() {
                     // Fallback si pas de photos hero
                     <div className="hero-overlay" style={{ background: 'linear-gradient(135deg, var(--primary) 0%, var(--black) 100%)' }}>
                         <h1>Sandy's Art</h1>
+                        <h1>Photographies</h1>
                         <p>Photographe de l'émotion et de l'authenticité</p>
                         <Link to="/gallery" className="btn btn-light">
                             Découvrir mon travail

@@ -11,7 +11,7 @@ function Footer() {
 
                     {/* Colonne 1 - Branding */}
                     <div className="footer-column">
-                        <h3 className="footer-brand">Sandy's Art</h3>
+                        <h3 className="footer-brand">Sandy's Art Photographies</h3>
                         <p className="footer-tagline">
                             Photographe de l'émotion<br />et de l'authenticité
                         </p>
@@ -55,7 +55,7 @@ function Footer() {
                 {/* Barre du bas */}
                 <div className="footer-bottom">
                     <p className="footer-copyright">
-                        © {currentYear} Sandy's Art Photography. Tous droits réservés.
+                        © {currentYear} Sandy's Art Photographies. Tous droits réservés.
                     </p>
                     <div className="footer-legal">
                         <Link to="/rgpd">RGPD & Confidentialité</Link>
