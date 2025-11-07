@@ -1,65 +1,69 @@
 .header {
-    background: var(--white);
-    box-shadow: var(--shadow-sm);
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
     z-index: 1000;
+    background: transparent;
     transition: all var(--transition-normal);
-    border-bottom: 1px solid rgba(212, 165, 116, 0.1);
+    padding: 2rem 0;
 }
 
 .header.scrolled {
-    box-shadow: var(--shadow-md);
-    padding: 0.5rem 0;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    padding: 1rem 0;
+    box-shadow: var(--shadow-sm);
 }
 
 .nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.25rem 0;
-    transition: var(--transition-normal);
 }
 
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    transition: var(--transition-normal);
-}
-
-.logo:hover {
-    transform: translateY(-2px);
-}
-
+/* Logo minimaliste */
 .logo h1 {
     font-family: var(--font-heading);
-    font-size: 1.75rem;
-    font-weight: 600;
-    color: var(--text-primary);
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: var(--white);
+    letter-spacing: 3px;
+    text-transform: uppercase;
     margin: 0;
-    letter-spacing: -0.5px;
+    transition: var(--transition-fast);
+}
+
+.header.scrolled .logo h1 {
+    color: var(--text-primary);
 }
 
 .logo h1 span {
-    color: var(--primary);
+    font-weight: 300;
     font-style: italic;
 }
 
+/* Navigation minimaliste */
 .nav-links {
     display: flex;
-    gap: 2.5rem;
+    gap: 3rem;
     list-style: none;
     align-items: center;
 }
 
 .nav-links a {
-    color: var(--text-secondary);
-    font-weight: 500;
-    font-size: 1rem;
+    color: var(--white);
+    font-size: 0.85rem;
+    font-weight: 400;
+    letter-spacing: 2px;
+    text-transform: uppercase;
     position: relative;
     padding: 0.5rem 0;
-    transition: var(--transition-normal);
+    transition: var(--transition-fast);
+}
+
+.header.scrolled .nav-links a {
+    color: var(--text-secondary);
 }
 
 .nav-links a::after {
@@ -68,56 +72,77 @@
     bottom: 0;
     left: 0;
     width: 0;
-    height: 2px;
-    background: var(--primary);
-    transition: width var(--transition-normal);
+    height: 1px;
+    background: var(--white);
+    transition: width var(--transition-fast);
+}
+
+.header.scrolled .nav-links a::after {
+    background: var(--accent);
 }
 
 .nav-links a:hover {
-    color: var(--primary);
+    color: var(--white);
 }
 
-.nav-links a:hover::after {
-    width: 100%;
+.header.scrolled .nav-links a:hover {
+    color: var(--accent);
 }
 
-.nav-links a.active {
-    color: var(--primary);
-    font-weight: 600;
-}
-
+.nav-links a:hover::after,
 .nav-links a.active::after {
     width: 100%;
 }
 
-/* Bouton contact dans le header */
-.nav-contact-btn {
-    background: var(--primary);
+.nav-links a.active {
     color: var(--white);
-    padding: 0.625rem 1.5rem;
-    border-radius: var(--radius-sm);
-    font-weight: 600;
+}
+
+.header.scrolled .nav-links a.active {
+    color: var(--accent);
+}
+
+/* Bouton contact minimaliste */
+.nav-contact-btn {
+    border: 1px solid var(--white);
+    color: var(--white);
+    padding: 0.5rem 1.5rem;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
     transition: all var(--transition-normal);
 }
 
+.header.scrolled .nav-contact-btn {
+    border-color: var(--text-primary);
+    color: var(--text-primary);
+}
+
 .nav-contact-btn:hover {
-    background: var(--primary-dark);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-sm);
+    background: var(--white);
+    color: var(--black);
+}
+
+.header.scrolled .nav-contact-btn:hover {
+    background: var(--text-primary);
+    color: var(--white);
 }
 
 .nav-contact-btn:hover::after {
     display: none;
 }
 
-/* Mobile menu (on le fera plus tard si besoin) */
+/* Mobile */
 @media (max-width: 768px) {
     .nav-links {
         gap: 1.5rem;
-        font-size: 0.95rem;
+    }
+
+    .nav-links a {
+        font-size: 0.75rem;
     }
 
     .logo h1 {
-        font-size: 1.35rem;
+        font-size: 1.2rem;
     }
 }

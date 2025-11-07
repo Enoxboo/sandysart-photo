@@ -1,12 +1,11 @@
-import {Link, useLocation} from 'react-router-dom';
-import {useEffect, useState} from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import './Header.css';
 
 function Header() {
     const location = useLocation();
     const [scrolled, setScrolled] = useState(false);
 
-    // Détecter le scroll pour changer le style du header
     useEffect(() => {
         const handleScroll = () => {
             setScrolled(window.scrollY > 50);
@@ -21,7 +20,7 @@ function Header() {
             <div className="container">
                 <nav className="nav">
                     <Link to="/" className="logo">
-                        <h1>Sandy's <span>Art</span></h1>
+                        <h1>Sandy's Art</h1>
                     </Link>
 
                     <ul className="nav-links">
@@ -38,7 +37,7 @@ function Header() {
                                 to="/gallery"
                                 className={location.pathname === '/gallery' ? 'active' : ''}
                             >
-                                Galerie
+                                Portfolio
                             </Link>
                         </li>
                         <li>

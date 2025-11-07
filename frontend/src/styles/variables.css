@@ -1,44 +1,44 @@
 /* ============================================
-   VARIABLES GLOBALES - Sandy's Art Photography
+   VARIABLES GLOBALES - Portfolio Minimaliste
    ============================================ */
 
 :root {
-    /* Palette Terre & Or */
-    --primary: #D4A574;
-    --primary-dark: #B8895E;
-    --secondary: #8B7355;
-    --accent: #F4E4D4;
-    --background: #FDFBF7;
+    /* Palette Noir & Blanc Élégante */
+    --primary: #1A1A1A;
+    --primary-light: #2D2D2D;
+    --accent: #C9A86A; /* Or subtil */
+    --accent-light: #E5D4B8;
+    --background: #FAFAFA;
     --white: #FFFFFF;
+    --black: #000000;
 
     /* Textes */
-    --text-primary: #2C2416;
-    --text-secondary: #5A4D3A;
-    --text-light: #8B7D6B;
+    --text-primary: #1A1A1A;
+    --text-secondary: #666666;
+    --text-light: #999999;
 
     /* Espacements */
     --spacing-xs: 0.5rem;
     --spacing-sm: 1rem;
     --spacing-md: 2rem;
-    --spacing-lg: 3rem;
-    --spacing-xl: 5rem;
+    --spacing-lg: 4rem;
+    --spacing-xl: 6rem;
 
     /* Bordures */
-    --radius-sm: 4px;
-    --radius-md: 8px;
-    --radius-lg: 16px;
+    --radius-sm: 2px;
+    --radius-md: 4px;
 
-    /* Ombres */
-    --shadow-sm: 0 2px 8px rgba(44, 36, 22, 0.08);
-    --shadow-md: 0 4px 16px rgba(44, 36, 22, 0.12);
-    --shadow-lg: 0 8px 24px rgba(44, 36, 22, 0.16);
+    /* Ombres subtiles */
+    --shadow-sm: 0 2px 12px rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 4px 24px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.12);
 
     /* Transitions */
-    --transition-fast: 0.2s ease;
-    --transition-normal: 0.3s ease;
-    --transition-slow: 0.5s ease;
+    --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-normal: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 
     /* Typographie */
-    --font-heading: 'Playfair Display', serif;
+    --font-heading: 'Cormorant Garamond', serif;
     --font-body: 'Inter', sans-serif;
 }
