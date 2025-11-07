@@ -1,8 +1,7 @@
-/* Import des variables */
 @import './styles/variables.css';
 
-/* Import des Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+/* Google Fonts - Élégantes */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
 
 /* ============================================
    RESET & BASE
@@ -18,6 +17,13 @@ html {
     scroll-behavior: smooth;
 }
 
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
 body {
     font-family: var(--font-body);
     background-color: var(--background);
@@ -25,6 +31,8 @@ body {
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    padding-top: 0;
 }
 
 /* ============================================
@@ -33,30 +41,35 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
-    font-weight: 600;
+    font-weight: 400;
     line-height: 1.2;
     color: var(--text-primary);
+    letter-spacing: -0.5px;
 }
 
 h1 {
-    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 300;
     margin-bottom: var(--spacing-md);
 }
 
 h2 {
-    font-size: clamp(1.75rem, 4vw, 2.5rem);
-    margin-bottom: var(--spacing-sm);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 400;
+    margin-bottom: var(--spacing-md);
 }
 
 h3 {
-    font-size: clamp(1.25rem, 3vw, 1.75rem);
+    font-size: clamp(1.5rem, 3vw, 2rem);
     margin-bottom: var(--spacing-sm);
 }
 
 p {
-    font-size: 1.05rem;
+    font-size: 1rem;
+    font-weight: 300;
     color: var(--text-secondary);
     margin-bottom: var(--spacing-sm);
+    line-height: 1.8;
 }
 
 /* ============================================
@@ -64,57 +77,112 @@ p {
    ============================================ */
 
 .container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 0 var(--spacing-md);
 }
 
+.container-full {
+    width: 100%;
+    padding: 0;
+}
+
 /* ============================================
-   LIENS
+   LIENS & BOUTONS
    ============================================ */
 
 a {
     color: inherit;
     text-decoration: none;
-    transition: var(--transition-normal);
+    transition: var(--transition-fast);
 }
 
 a:hover {
-    color: var(--primary);
+    color: var(--accent);
 }
 
-/* ============================================
-   BOUTONS
-   ============================================ */
-
-button, .btn {
+button {
     font-family: var(--font-body);
-    font-weight: 500;
     cursor: pointer;
     border: none;
     transition: var(--transition-normal);
 }
 
-button:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-}
-
-.btn-primary {
-    background: var(--primary);
-    color: var(--white);
-    padding: 0.875rem 2rem;
-    border-radius: var(--radius-sm);
-    font-size: 1rem;
-    font-weight: 600;
-    box-shadow: var(--shadow-sm);
+.btn {
+    display: inline-block;
+    padding: 1rem 2.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border: 1px solid var(--text-primary);
+    background: transparent;
+    color: var(--text-primary);
     transition: all var(--transition-normal);
 }
 
-.btn-primary:hover {
-    background: var(--primary-dark);
-    box-shadow: var(--shadow-md);
+.btn:hover {
+    background: var(--text-primary);
+    color: var(--white);
     transform: translateY(-2px);
+}
+
+.btn-light {
+    border-color: var(--white);
+    color: var(--white);
+}
+
+.btn-light:hover {
+    background: var(--white);
+    color: var(--black);
+}
+
+/* ============================================
+   ANIMATIONS AU SCROLL
+   ============================================ */
+
+.fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.fade-in-left {
+    opacity: 0;
+    transform: translateX(-50px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.fade-in-left.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.fade-in-right {
+    opacity: 0;
+    transform: translateX(50px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.fade-in-right.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.scale-in {
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.scale-in.visible {
+    opacity: 1;
+    transform: scale(1);
 }
 
 /* ============================================
@@ -125,54 +193,29 @@ section {
     padding: var(--spacing-xl) 0;
 }
 
-/* ============================================
-   ANIMATIONS
-   ============================================ */
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.section-title {
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+    position: relative;
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-.fade-in-up {
-    animation: fadeInUp 0.6s ease-out;
-}
-
-.fade-in {
-    animation: fadeIn 0.4s ease-out;
+.section-title::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 1px;
+    background: var(--accent);
+    margin: var(--spacing-md) auto 0;
 }
 
 /* ============================================
    UTILITAIRES
    ============================================ */
 
-.text-center {
-    text-align: center;
-}
-
-.text-accent {
-    color: var(--primary);
-}
+.text-center { text-align: center; }
+.text-uppercase { text-transform: uppercase; }
+.letter-spacing { letter-spacing: 3px; }
 
 .mb-sm { margin-bottom: var(--spacing-sm); }
 .mb-md { margin-bottom: var(--spacing-md); }
 .mb-lg { margin-bottom: var(--spacing-lg); }
-
-.mt-sm { margin-top: var(--spacing-sm); }
-.mt-md { margin-top: var(--spacing-md); }
-.mt-lg { margin-top: var(--spacing-lg); }

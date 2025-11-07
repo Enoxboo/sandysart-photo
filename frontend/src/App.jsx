@@ -11,7 +11,7 @@ function App() {
     return (
         <BrowserRouter>
             <Header />
-            <main style={{ minHeight: '80vh', paddingTop: '2rem' }}>
+            <main>
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/gallery" element={<Gallery />} />
