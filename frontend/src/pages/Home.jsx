@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { getWeekPhotos } from '../services/api';
+import { getWeekPhotos, getHeroPhotos } from '../services/api';
 import './Home.css';
 
 function Home() {
@@ -20,11 +20,13 @@ function Home() {
     const loadPhotos = async () => {
         try {
             setLoading(true);
-            const data = await getWeekPhotos();
-            setPhotos(data);
+            const [weekData, heroData] = await Promise.all([
+                getWeekPhotos(),
+                getHeroPhotos()
+            ]);
 
-            // Utiliser les 3 premières photos pour le carrousel (ou moins si pas assez)
-            setCarouselPhotos(data.slice(0, 3));
+            setPhotos(weekData);
+            setCarouselPhotos(heroData);
         } catch (err) {
             setError('Erreur lors du chargement des photos');
             console.error(err);
@@ -140,13 +142,16 @@ function Home() {
                         )}
                     </>
                 ) : (
-                    // Fallback si pas de photos
-                    <div className="hero-overlay">
+                    // Fallback si pas de photos hero
+                    <div className="hero-overlay" style={{ background: 'linear-gradient(135deg, var(--primary) 0%, var(--black) 100%)' }}>
                         <h1>Sandy's Art</h1>
                         <p>Photographe de l'émotion et de l'authenticité</p>
                         <Link to="/gallery" className="btn btn-light">
                             Découvrir mon travail
                         </Link>
+                        <p style={{ marginTop: '2rem', fontSize: '0.9rem', opacity: 0.7 }}>
+                            Aucune photo d'accueil sélectionnée pour le moment
+                        </p>
                     </div>
                 )}
             </section>
