@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { getWeekPhotos, getHeroPhotos } from '../services/api';
 import './Home.css';
+import SEO from '../components/SEO';
 
 function Home() {
     const [photos, setPhotos] = useState([]);
@@ -104,6 +105,11 @@ function Home() {
 
     return (
         <>
+            {/* ← Composant SEO : met à jour toutes les balises meta pour cette page */}
+            <SEO
+                title="Accueil"
+                description="Photographe professionnelle au Vernet. Spécialisée en photos de famille, nouveaux nés, grossesse, mariage. Plus de 15 ans d'expérience. Tarifs accessibles."
+            />
             {/* Hero Carousel */}
             <section className="hero-carousel">
                 {carouselPhotos.length > 0 ? (
