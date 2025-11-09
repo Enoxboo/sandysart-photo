@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getAllPhotos, getPhotosByTag } from '../services/api';
 import './Gallery.css';
+import SEO from "../components/SEO.jsx";
 
 function Gallery() {
     const [photos, setPhotos] = useState([]);
@@ -147,6 +148,10 @@ function Gallery() {
 
     return (
         <>
+            <SEO
+                title="Galerie"
+                description="Découvrez mon portfolio photo : grossesse, nouveau-nés, famille, mariage. Plus de 15 ans d'expérience au Vernet (31810)."
+            />
             {/* Hero */}
             <section className="gallery-hero">
                 <div className="gallery-hero-content">

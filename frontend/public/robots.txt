@@ -1,0 +1,18 @@
+# robots.txt - Sandy's Art Photographies
+# Ce fichier indique aux moteurs de recherche quelles pages indexer
+
+# Règles pour tous les robots (Google, Bing, etc.)
+User-agent: *
+
+# Pages INTERDITES (ne pas indexer)
+Disallow: /admin
+Disallow: /admin/*
+Disallow: /uploads/
+
+# Tout le reste est autorisé
+Allow: /
+
+# Localisation du sitemap (aide Google à trouver toutes les pages)
+Sitemap: https://www.sandysartphotographies.com/sitemap.xml
+
+# Note : Remplace l'URL par ton vrai nom de domaine en production !

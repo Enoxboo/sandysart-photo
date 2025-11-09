@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import './RGPD.css';
+import SEO from "../components/SEO.jsx";
 
 function RGPD() {
     const location = useLocation();
@@ -17,6 +18,10 @@ function RGPD() {
 
     return (
         <div className="rgpd-page">
+            <SEO
+                title="RGPD"
+                description="Politique de confidentialité et RGPD - Sandy's Art Photographies. Protection de vos données personnelles."
+            />
             {/* Hero */}
             <section className="rgpd-hero">
                 <h1>RGPD & Confidentialité</h1>

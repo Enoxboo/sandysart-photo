@@ -1,8 +1,13 @@
 import './About.css';
+import SEO from '../components/SEO';
 
 function About() {
     return (
         <>
+            <SEO
+                title="À propos"
+                description="Sandy Limousin, photographe professionnelle depuis 15 ans. Maman de 3 enfants, je capture vos émotions avec authenticité au Vernet."
+            />
             {/* Hero */}
             <section className="about-hero">
                 <h1>À Propos</h1>
