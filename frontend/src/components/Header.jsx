@@ -50,8 +50,8 @@ function Header() {
                         </li>
                         <li>
                             <Link
-                                to="/admin"
-                                className={`nav-contact-btn ${location.pathname === '/admin' ? 'active' : ''}`}
+                                to="/contact"
+                                className={`nav-contact-btn ${location.pathname === '/contact' ? 'active' : ''}`}
                             >
                                 Contact
                             </Link>

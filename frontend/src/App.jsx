@@ -6,6 +6,7 @@ import Gallery from './pages/Gallery';
 import About from './pages/About';
 import Admin from './pages/Admin';
 import RGPD from './pages/RGPD';
+import Contact from './pages/Contact';
 
 function App() {
     return (
@@ -18,6 +19,7 @@ function App() {
                     <Route path="/about" element={<About />} />
                     <Route path="/admin" element={<Admin />} />
                     <Route path="/rgpd" element={<RGPD />} />
+                    <Route path="/contact" element={<Contact />} />
                 </Routes>
             </main>
             <Footer />
