@@ -21,15 +21,16 @@ db.exec(`
         description   TEXT,
         tags          TEXT,
         is_week_photo BOOLEAN  DEFAULT 0,
+        is_hero_photo BOOLEAN  DEFAULT 0,
         upload_date   DATETIME DEFAULT CURRENT_TIMESTAMP
     )
 `);
 
 db.exec(`
   CREATE INDEX IF NOT EXISTS idx_is_week_photo ON photos(is_week_photo);
+  CREATE INDEX IF NOT EXISTS idx_is_hero_photo ON photos(is_hero_photo);
   CREATE INDEX IF NOT EXISTS idx_upload_date ON photos(upload_date);
 `);
 
 console.log('✅ Database initialized successfully');
-
 module.exports = db;

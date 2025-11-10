@@ -1,57 +1,171 @@
-.rgpd-container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 2rem 1rem;
+.rgpd-page {
+    min-height: 100vh;
 }
 
-.rgpd-content {
-    background: white;
-    padding: 2.5rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.rgpd-content h1 {
-    font-size: 2rem;
-    color: #333;
-    margin-bottom: 1.5rem;
+/* Hero */
+.rgpd-hero {
+    height: 40vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     text-align: center;
+    background: linear-gradient(135deg, var(--primary-light) 0%, var(--black) 100%);
+    color: var(--white);
+    padding: var(--spacing-md);
 }
 
-.rgpd-content h2 {
-    font-size: 1.3rem;
-    color: #667eea;
-    margin-top: 2rem;
-    margin-bottom: 1rem;
+.rgpd-hero h1 {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 300;
+    color: var(--white);
+    letter-spacing: 5px;
+    margin-bottom: var(--spacing-sm);
 }
 
-.rgpd-content p {
-    line-height: 1.8;
-    color: #555;
-    margin-bottom: 1rem;
-    text-align: justify;
+.rgpd-hero p {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 300;
 }
 
-.rgpd-content a {
-    color: #667eea;
+/* Contenu */
+.rgpd-content {
+    padding: var(--spacing-xl) 0;
+    background: var(--background);
+}
+
+.rgpd-intro {
+    font-size: 1.2rem;
+    line-height: 1.9;
+    color: var(--text-secondary);
+    font-weight: 300;
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto var(--spacing-xl);
+    padding: var(--spacing-lg);
+    background: var(--white);
+    border-left: 3px solid var(--accent);
+    box-shadow: var(--shadow-sm);
+}
+
+.rgpd-section {
+    max-width: 900px;
+    margin: 0 auto var(--spacing-xl);
+    background: var(--white);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+}
+
+.rgpd-section h2 {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 400;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 2px solid var(--accent);
+}
+
+.rgpd-section p {
+    font-size: 1.05rem;
+    line-height: 1.9;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-md);
+}
+
+.rgpd-section p:last-child {
+    margin-bottom: 0;
+}
+
+.rgpd-section a {
+    color: var(--accent);
     text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: var(--transition-fast);
+}
+
+.rgpd-section a:hover {
+    border-bottom-color: var(--accent);
+}
+
+/* Mentions légales */
+.mentions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-md);
+}
+
+.mention-item {
+    padding: var(--spacing-md);
+    background: var(--background);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--accent);
+}
+
+.mention-item h3 {
+    font-size: 1.1rem;
     font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
 }
 
-.rgpd-content a:hover {
-    text-decoration: underline;
+.mention-item p {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
 }
 
+.mention-item p:last-child {
+    margin-bottom: 0;
+}
+
+/* Contact section */
+.rgpd-contact {
+    text-align: center;
+    padding: var(--spacing-xl);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--black) 100%);
+    color: var(--white);
+    border-radius: var(--radius-md);
+    margin-top: var(--spacing-xl);
+}
+
+.rgpd-contact h3 {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 400;
+    color: var(--white);
+    margin-bottom: var(--spacing-sm);
+}
+
+.rgpd-contact p {
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: var(--spacing-lg);
+    font-size: 1.05rem;
+}
+
+.rgpd-contact .btn {
+    background: var(--white);
+    color: var(--primary);
+    border-color: var(--white);
+}
+
+.rgpd-contact .btn:hover {
+    background: transparent;
+    color: var(--white);
+}
+
+/* Responsive */
 @media (max-width: 768px) {
-    .rgpd-content {
-        padding: 1.5rem;
+    .rgpd-hero {
+        height: 35vh;
     }
 
-    .rgpd-content h1 {
-        font-size: 1.5rem;
+    .rgpd-section {
+        padding: var(--spacing-md);
     }
 
-    .rgpd-content h2 {
-        font-size: 1.1rem;
+    .mentions-grid {
+        grid-template-columns: 1fr;
     }
 }

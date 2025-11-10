@@ -71,6 +71,11 @@ export const getWeekPhotos = async () => {
     return response.data;
 };
 
+export const getHeroPhotos = async () => {
+    const response = await api.get('/photos/hero');
+    return response.data;
+};
+
 /**
  * Retrieves photos filtered by tag.
  * @param {string} tag - Tag to filter by
