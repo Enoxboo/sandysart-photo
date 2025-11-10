@@ -6,18 +6,20 @@ import Gallery from './pages/Gallery';
 import About from './pages/About';
 import Admin from './pages/Admin';
 import RGPD from './pages/RGPD';
+import Contact from './pages/Contact';
 
 function App() {
     return (
         <BrowserRouter>
             <Header />
-            <main style={{ minHeight: '80vh', paddingTop: '2rem' }}>
+            <main>
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/gallery" element={<Gallery />} />
                     <Route path="/about" element={<About />} />
                     <Route path="/admin" element={<Admin />} />
                     <Route path="/rgpd" element={<RGPD />} />
+                    <Route path="/contact" element={<Contact />} />
                 </Routes>
             </main>
             <Footer />

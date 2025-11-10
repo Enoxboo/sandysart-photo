@@ -1,211 +1,214 @@
-/**
- * @fileoverview Photo controller handling CRUD operations
- * @requires ../config/database
- * @requires fs
- * @requires path
- */
-
 const db = require('../config/database');
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
+const { AppError } = require('../middleware/errorHandler');
+
+/**
+ * Wrapper pour gérer les erreurs async
+ */
+const asyncHandler = (fn) => (req, res, next) => {
+    Promise.resolve(fn(req, res, next)).catch(next);
+};
 
 /**
  * Retrieve all photos
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
  */
-exports.getAllPhotos = (req, res) => {
-    try {
-        const photos = db.prepare('SELECT * FROM photos ORDER BY upload_date DESC').all();
-        res.json(photos);
-    } catch (error) {
-        console.error('Error fetching photos:', error);
-        res.status(500).json({error: 'Failed to fetch photos'});
-    }
-};
+exports.getAllPhotos = asyncHandler(async (req, res) => {
+    const photos = db.prepare('SELECT * FROM photos ORDER BY upload_date DESC').all();
+    res.json(photos);
+});
 
 /**
  * Retrieve a single photo by ID
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
  */
-exports.getPhotoById = (req, res) => {
-    try {
-        const {id} = req.params;
-        const photo = db.prepare('SELECT * FROM photos WHERE id = ?').get(id);
+exports.getPhotoById = asyncHandler(async (req, res) => {
+    const { id } = req.params;
 
-        if (!photo) {
-            return res.status(404).json({error: 'Photo not found'});
-        }
-
-        res.json(photo);
-    } catch (error) {
-        console.error('Error fetching photo:', error);
-        res.status(500).json({error: 'Failed to fetch photo'});
+    if (!id || isNaN(id)) {
+        throw new AppError('ID invalide', 400, 'INVALID_ID');
     }
-};
+
+    const photo = db.prepare('SELECT * FROM photos WHERE id = ?').get(id);
+
+    if (!photo) {
+        throw new AppError('Photo non trouvée', 404, 'PHOTO_NOT_FOUND');
+    }
+
+    res.json(photo);
+});
 
 /**
  * Retrieve photos marked as week photos
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
  */
-exports.getWeekPhotos = (req, res) => {
-    try {
-        const photos = db.prepare('SELECT * FROM photos WHERE is_week_photo = 1').all();
-        res.json(photos);
-    } catch (error) {
-        console.error('Error fetching week photos:', error);
-        res.status(500).json({error: 'Failed to fetch week photos'});
-    }
-};
+exports.getWeekPhotos = asyncHandler(async (req, res) => {
+    const photos = db.prepare('SELECT * FROM photos WHERE is_week_photo = 1').all();
+    res.json(photos);
+});
+
+/**
+ * Retrieve photos marked as hero photos
+ */
+exports.getHeroPhotos = asyncHandler(async (req, res) => {
+    const photos = db.prepare('SELECT * FROM photos WHERE is_hero_photo = 1 ORDER BY upload_date DESC').all();
+    res.json(photos);
+});
 
 /**
  * Retrieve photos filtered by tag
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
  */
-exports.getPhotosByTag = (req, res) => {
-    try {
-        const {tag} = req.params;
-        const photos = db.prepare('SELECT * FROM photos WHERE tags LIKE ?').all(`%${tag}%`);
-        res.json(photos);
-    } catch (error) {
-        console.error('Error fetching photos by tag:', error);
-        res.status(500).json({error: 'Failed to fetch photos by tag'});
+exports.getPhotosByTag = asyncHandler(async (req, res) => {
+    const { tag } = req.params;
+
+    if (!tag || tag.trim() === '') {
+        throw new AppError('Tag invalide', 400, 'INVALID_TAG');
     }
-};
+
+    const photos = db.prepare('SELECT * FROM photos WHERE tags LIKE ?').all(`%${tag}%`);
+    res.json(photos);
+});
 
 /**
  * Create a new photo entry
- * @param {Object} req - Express request object with file upload
- * @param {Object} res - Express response object
  */
-exports.createPhoto = async (req, res) => {
-    try {
-        if (!req.file) {
-            return res.status(400).json({ error: 'No file uploaded' });
-        }
-
-        const { title, description, tags } = req.body;
-        const originalFilename = req.file.filename;
-        const originalPath = req.file.path;
-
-        const optimizedFilename = originalFilename;
-        const optimizedPath = path.join(__dirname, '../../uploads', optimizedFilename);
-
-        try {
-            await sharp(originalPath)
-                .resize(1920, null, {
-                    withoutEnlargement: true,
-                    fit: 'inside'
-                })
-                .jpeg({ quality: 85 })
-                .toFile(optimizedPath);
-
-            fs.unlinkSync(originalPath);
-
-            const stmt = db.prepare(`
-        INSERT INTO photos (filename, original_name, title, description, tags)
-        VALUES (?, ?, ?, ?, ?)
-      `);
-
-            const result = stmt.run(
-                optimizedFilename,
-                req.file.originalname,
-                title || null,
-                description || null,
-                tags || null
-            );
-
-            res.status(201).json({
-                message: 'Photo uploaded and optimized successfully',
-                id: result.lastInsertRowid
-            });
-        } catch (sharpError) {
-            console.error('Error optimizing image:', sharpError);
-            const stmt = db.prepare(`
-        INSERT INTO photos (filename, original_name, title, description, tags)
-        VALUES (?, ?, ?, ?, ?)
-      `);
-
-            const result = stmt.run(
-                originalFilename,
-                req.file.originalname,
-                title || null,
-                description || null,
-                tags || null
-            );
-
-            res.status(201).json({
-                message: 'Photo uploaded (optimization failed, using original)',
-                id: result.lastInsertRowid
-            });
-        }
-    } catch (error) {
-        console.error('Error creating photo:', error);
-        res.status(500).json({ error: 'Failed to create photo' });
+exports.createPhoto = asyncHandler(async (req, res) => {
+    if (!req.file) {
+        throw new AppError('Aucun fichier uploadé', 400, 'NO_FILE');
     }
-};
+
+    const { title, description, tags } = req.body;
+    const originalFilename = req.file.filename;
+    const originalPath = req.file.path;
+
+    // Nouveau nom pour la version optimisée
+    const optimizedFilename = 'optimized-' + originalFilename;
+    const optimizedPath = path.join(__dirname, '../../uploads', optimizedFilename);
+
+    try {
+        // Optimiser l'image
+        await sharp(originalPath)
+            .resize(1920, null, {
+                withoutEnlargement: true,
+                fit: 'inside'
+            })
+            .jpeg({ quality: 85 })
+            .toFile(optimizedPath);
+
+        // Supprimer l'original
+        fs.unlinkSync(originalPath);
+
+        const stmt = db.prepare(`
+      INSERT INTO photos (filename, original_name, title, description, tags)
+      VALUES (?, ?, ?, ?, ?)
+    `);
+
+        const result = stmt.run(
+            optimizedFilename,
+            req.file.originalname,
+            title || null,
+            description || null,
+            tags || null
+        );
+
+        res.status(201).json({
+            message: 'Photo uploadée et optimisée avec succès',
+            id: result.lastInsertRowid,
+            filename: optimizedFilename
+        });
+    } catch (sharpError) {
+        console.error('❌ Erreur optimisation image:', sharpError);
+
+        // Si l'optimisation échoue, utilise l'original
+        const stmt = db.prepare(`
+      INSERT INTO photos (filename, original_name, title, description, tags)
+      VALUES (?, ?, ?, ?, ?)
+    `);
+
+        const result = stmt.run(
+            originalFilename,
+            req.file.originalname,
+            title || null,
+            description || null,
+            tags || null
+        );
+
+        res.status(201).json({
+            message: 'Photo uploadée (optimisation échouée, original utilisé)',
+            id: result.lastInsertRowid,
+            warning: 'Image non optimisée'
+        });
+    }
+});
 
 /**
  * Update existing photo metadata
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
  */
-exports.updatePhoto = (req, res) => {
-    try {
-        const {id} = req.params;
-        const {title, description, tags, is_week_photo} = req.body;
+exports.updatePhoto = asyncHandler(async (req, res) => {
+    const { id } = req.params;
 
-        const stmt = db.prepare(`
-            UPDATE photos
-            SET title         = ?,
-                description   = ?,
-                tags          = ?,
-                is_week_photo = ?
-            WHERE id = ?
-        `);
-
-        const result = stmt.run(title, description, tags, is_week_photo, id);
-
-        if (result.changes === 0) {
-            return res.status(404).json({error: 'Photo not found'});
-        }
-
-        res.json({message: 'Photo updated successfully'});
-    } catch (error) {
-        console.error('Error updating photo:', error);
-        res.status(500).json({error: 'Failed to update photo'});
+    if (!id || isNaN(id)) {
+        throw new AppError('ID invalide', 400, 'INVALID_ID');
     }
-};
+
+    const { title, description, tags, is_week_photo, is_hero_photo } = req.body;
+
+    const stmt = db.prepare(`
+    UPDATE photos
+    SET title = ?, description = ?, tags = ?, is_week_photo = ?, is_hero_photo = ?
+    WHERE id = ?
+  `);
+
+    const result = stmt.run(
+        title || null,
+        description || null,
+        tags || null,
+        is_week_photo || 0,
+        is_hero_photo || 0,
+        id
+    );
+
+    if (result.changes === 0) {
+        throw new AppError('Photo non trouvée', 404, 'PHOTO_NOT_FOUND');
+    }
+
+    res.json({
+        message: 'Photo mise à jour avec succès',
+        id: parseInt(id)
+    });
+});
 
 /**
  * Delete a photo and its associated file
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
  */
-exports.deletePhoto = (req, res) => {
-    try {
-        const {id} = req.params;
+exports.deletePhoto = asyncHandler(async (req, res) => {
+    const { id } = req.params;
 
-        const photo = db.prepare('SELECT filename FROM photos WHERE id = ?').get(id);
-
-        if (!photo) {
-            return res.status(404).json({error: 'Photo not found'});
-        }
-
-        const filePath = path.join(__dirname, '../../uploads', photo.filename);
-        if (fs.existsSync(filePath)) {
-            fs.unlinkSync(filePath);
-        }
-
-        db.prepare('DELETE FROM photos WHERE id = ?').run(id);
-
-        res.json({message: 'Photo deleted successfully'});
-    } catch (error) {
-        console.error('Error deleting photo:', error);
-        res.status(500).json({error: 'Failed to delete photo'});
+    if (!id || isNaN(id)) {
+        throw new AppError('ID invalide', 400, 'INVALID_ID');
     }
-};
+
+    const photo = db.prepare('SELECT filename FROM photos WHERE id = ?').get(id);
+
+    if (!photo) {
+        throw new AppError('Photo non trouvée', 404, 'PHOTO_NOT_FOUND');
+    }
+
+    // Supprimer le fichier physique
+    const filePath = path.join(__dirname, '../../uploads', photo.filename);
+    if (fs.existsSync(filePath)) {
+        try {
+            fs.unlinkSync(filePath);
+        } catch (fsError) {
+            console.error('⚠️  Erreur suppression fichier:', fsError);
+            // Continue quand même la suppression en BDD
+        }
+    }
+
+    // Supprimer l'entrée en BDD
+    db.prepare('DELETE FROM photos WHERE id = ?').run(id);
+
+    res.json({
+        message: 'Photo supprimée avec succès',
+        id: parseInt(id)
+    });
+});
