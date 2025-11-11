@@ -3,45 +3,42 @@
 
     <!-- Page d'accueil -->
     <url>
-        <loc>https://www.sandysartphotographies.com/</loc>
-        <lastmod>2025-01-15</lastmod>
+        <loc>https://sandysartphotographies.com/</loc>
+        <lastmod>2025-11-11</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
     </url>
 
     <!-- Portfolio / Galerie -->
     <url>
-        <loc>https://www.sandysartphotographies.com/gallery</loc>
-        <lastmod>2025-01-15</lastmod>
+        <loc>https://sandysartphotographies.com/gallery</loc>
+        <lastmod>2025-11-11</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
 
     <!-- À propos -->
     <url>
-        <loc>https://www.sandysartphotographies.com/about</loc>
-        <lastmod>2025-01-15</lastmod>
+        <loc>https://sandysartphotographies.com/about</loc>
+        <lastmod>2025-11-11</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
 
     <!-- RGPD & Mentions légales -->
     <url>
-        <loc>https://www.sandysartphotographies.com/rgpd</loc>
-        <lastmod>2025-01-15</lastmod>
+        <loc>https://sandysartphotographies.com/rgpd</loc>
+        <lastmod>2025-11-11</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.3</priority>
     </url>
 
-    <!-- Contact (à ajouter quand la page sera créée) -->
-    <!--
     <url>
-        <loc>https://www.sandysartphotographies.com/contact</loc>
-        <lastmod>2025-01-15</lastmod>
+        <loc>https://sandysartphotographies.com/contact</loc>
+        <lastmod>2025-11-11</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
     </url>
-    -->
 
 </urlset>
 
