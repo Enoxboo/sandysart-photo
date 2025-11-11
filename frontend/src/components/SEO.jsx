@@ -19,7 +19,7 @@ function SEO({
     // Informations de base du site
     const siteInfo = {
         name: "Sandy's Art Photographies",
-        url: 'https://www.sandysartphotographies.com', // À remplacer par la vraie URL en production
+        url: 'https://sandysartphotographies.com',
         locale: 'fr_FR',
         author: 'Sandy Limousin',
         phone: '+33684902214',
