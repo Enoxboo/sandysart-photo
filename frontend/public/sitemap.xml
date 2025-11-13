@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+    <!-- Page d'accueil -->
+    <url>
+        <loc>https://sandysartphotographies.com/</loc>
+        <lastmod>2025-11-11</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+    </url>
+
+    <!-- Portfolio / Galerie -->
+    <url>
+        <loc>https://sandysartphotographies.com/gallery</loc>
+        <lastmod>2025-11-11</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+
+    <!-- À propos -->
+    <url>
+        <loc>https://sandysartphotographies.com/about</loc>
+        <lastmod>2025-11-11</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <!-- RGPD & Mentions légales -->
+    <url>
+        <loc>https://sandysartphotographies.com/rgpd</loc>
+        <lastmod>2025-11-11</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.3</priority>
+    </url>
+
+    <url>
+        <loc>https://sandysartphotographies.com/contact</loc>
+        <lastmod>2025-11-11</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
+</urlset>
+
+        <!--
+        EXPLICATIONS :
+        - <loc> : URL de la page
+        - <lastmod> : Date de dernière modification (format YYYY-MM-DD)
+        - <changefreq> : Fréquence de mise à jour (pour que Google revienne crawler)
+        - <priority> : Importance de la page (0.0 à 1.0)
+
+        PRIORITÉS :
+        1.0 = Page d'accueil (la plus importante)
+        0.9 = Portfolio (très importante)
+        0.8 = À propos (importante)
+        0.7 = Contact (importante)
+        0.3 = RGPD (peu importante mais nécessaire)
+
+        ⚠️ IMPORTANT : Remplace "www.sandysartphotographies.com" par ton vrai nom de domaine !
+        ⚠️ Mets à jour la date <lastmod> quand tu modifies une page
+        -->

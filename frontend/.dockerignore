@@ -1,0 +1,33 @@
+# Node modules
+node_modules/
+npm-debug.log
+
+# Build output (sera recréé)
+dist/
+build/
+
+# Fichiers de développement
+.env
+.env.local
+.env.development
+
+# Fichiers temporaires
+*.log
+*.tmp
+.DS_Store
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+
+# Documentation
+README.md
+*.md
+
+# Tests
+test/
+*.test.js

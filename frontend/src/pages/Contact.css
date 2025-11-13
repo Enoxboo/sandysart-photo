@@ -1,0 +1,304 @@
+/* ============================================
+   CONTACT HERO
+   ============================================ */
+
+.contact-hero {
+    height: 50vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--black) 100%);
+    color: var(--white);
+    position: relative;
+}
+
+.contact-hero-content {
+    max-width: 800px;
+    padding: var(--spacing-md);
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.contact-hero h1 {
+    font-size: clamp(3rem, 6vw, 4.5rem);
+    font-weight: 300;
+    color: var(--white);
+    letter-spacing: 6px;
+    margin-bottom: var(--spacing-md);
+}
+
+.contact-hero-subtitle {
+    font-size: clamp(1.1rem, 2vw, 1.3rem);
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 300;
+    letter-spacing: 1px;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================
+   CONTACT CONTENT
+   ============================================ */
+
+.contact-content {
+    padding: var(--spacing-xl) 0;
+    background: var(--background);
+}
+
+/* Intro */
+.contact-intro {
+    max-width: 800px;
+    margin: 0 auto var(--spacing-xl);
+    text-align: center;
+    font-size: 1.2rem;
+    line-height: 2;
+    color: var(--text-secondary);
+    font-weight: 300;
+    padding: var(--spacing-lg);
+    background: var(--white);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+}
+
+/* ============================================
+   CARTE DE CONTACT PRINCIPALE
+   ============================================ */
+
+.contact-card {
+    max-width: 700px;
+    margin: 0 auto var(--spacing-xl);
+    background: var(--white);
+    padding: var(--spacing-xl);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.contact-card-icon {
+    font-size: 4rem;
+    margin-bottom: var(--spacing-md);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.contact-card h2 {
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    font-weight: 400;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.contact-card-subtitle {
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-lg);
+    font-weight: 300;
+}
+
+.contact-phone-link {
+    display: inline-block;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 400;
+    color: var(--accent);
+    text-decoration: none;
+    letter-spacing: 2px;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border: 2px solid var(--accent);
+    border-radius: var(--radius-sm);
+    margin: var(--spacing-lg) 0;
+    transition: all var(--transition-normal);
+    font-family: var(--font-heading);
+}
+
+.contact-phone-link:hover {
+    background: var(--accent);
+    color: var(--white);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+.contact-card-info {
+    margin-top: var(--spacing-lg);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.contact-card-info p {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    line-height: 1.8;
+    margin-bottom: var(--spacing-md);
+}
+
+.contact-card-info strong {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.contact-card-note {
+    font-size: 0.95rem;
+    color: var(--text-light);
+    font-style: italic;
+    margin-top: var(--spacing-md);
+}
+
+/* ============================================
+   GRILLE D'INFOS COMPLÉMENTAIRES
+   ============================================ */
+
+.contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+}
+
+.contact-info-card {
+    background: var(--white);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    text-align: center;
+    transition: all var(--transition-normal);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.contact-info-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+}
+
+.contact-info-icon {
+    font-size: 3rem;
+    margin-bottom: var(--spacing-md);
+}
+
+.contact-info-card h3 {
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.contact-info-card p {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    line-height: 1.8;
+    margin-bottom: 0.5rem;
+}
+
+.contact-info-detail {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    font-style: italic;
+    margin-top: var(--spacing-sm);
+}
+
+/* ============================================
+   CTA VERS PORTFOLIO
+   ============================================ */
+
+.contact-cta {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+    padding: var(--spacing-xl);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--black) 100%);
+    color: var(--white);
+    border-radius: var(--radius-md);
+}
+
+.contact-cta h3 {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 400;
+    color: var(--white);
+    margin-bottom: var(--spacing-sm);
+}
+
+.contact-cta p {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.05rem;
+    margin-bottom: var(--spacing-lg);
+}
+
+.contact-cta .btn {
+    background: var(--white);
+    color: var(--primary);
+    border-color: var(--white);
+}
+
+.contact-cta .btn:hover {
+    background: transparent;
+    color: var(--white);
+}
+
+/* ============================================
+   ANIMATIONS AU SCROLL
+   ============================================ */
+
+.fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeIn 0.8s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+    .contact-hero {
+        height: 40vh;
+    }
+
+    .contact-hero h1 {
+        font-size: 2.5rem;
+        letter-spacing: 3px;
+    }
+
+    .contact-card {
+        padding: var(--spacing-lg);
+    }
+
+    .contact-phone-link {
+        font-size: 1.8rem;
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+
+    .contact-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .contact-intro {
+        padding: var(--spacing-md);
+    }
+}
