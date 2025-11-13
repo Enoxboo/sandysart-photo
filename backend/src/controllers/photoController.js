@@ -81,7 +81,7 @@ exports.createPhoto = asyncHandler(async (req, res) => {
     const originalPath = req.file.path;
 
     // Nouveau nom pour la version optimisée
-    const optimizedFilename = 'optimized-' + originalFilename;
+    const optimizedFilename = originalFilename;
     const optimizedPath = path.join(__dirname, '../../uploads', optimizedFilename);
 
     try {

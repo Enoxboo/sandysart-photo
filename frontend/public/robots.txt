@@ -14,5 +14,3 @@ Allow: /
 
 # Localisation du sitemap (aide Google à trouver toutes les pages)
 Sitemap: https://sandysartphotographies.com/sitemap.xml
-
-# Note : Remplace l'URL par ton vrai nom de domaine en production !
