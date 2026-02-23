@@ -1,6 +1,46 @@
 import { useState, useEffect, useCallback } from 'react';
-import { login, verifyToken, getAllPhotos, uploadPhoto, updatePhoto, deletePhoto } from '../services/api';
+import { login, verifyToken, getAllPhotos, updatePhoto, deletePhoto } from '../services/api';
 import './Admin.css';
+
+async function uploadMultiplePhotos(files, tags, onProgress) {
+    const formData = new FormData();
+
+    files.forEach(file => {
+        formData.append('photos', file);
+    });
+
+    if (tags && tags.trim()) {
+        formData.append('tags', tags);
+    }
+
+    const token = localStorage.getItem('token');
+
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+
+        xhr.upload.addEventListener('progress', (e) => {
+            if (e.lengthComputable && onProgress) {
+                const percentComplete = Math.round((e.loaded / e.total) * 100);
+                onProgress(percentComplete);
+            }
+        });
+
+        xhr.addEventListener('load', () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                resolve(JSON.parse(xhr.responseText));
+            } else {
+                reject(new Error(xhr.responseText || 'Erreur upload'));
+            }
+        });
+
+        xhr.addEventListener('error', () => reject(new Error('Erreur réseau')));
+        xhr.addEventListener('abort', () => reject(new Error('Upload annulé')));
+
+        xhr.open('POST', '/api/photos/upload-multiple');
+        xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+        xhr.send(formData);
+    });
+}
 
 function Admin() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -9,14 +49,13 @@ function Admin() {
     const [loginError, setLoginError] = useState('');
 
     const [photos, setPhotos] = useState([]);
-    const [uploadForm, setUploadForm] = useState({
-        photo: null,
-        title: '',
-        description: '',
-        tags: ''
-    });
-    const [uploadMessage, setUploadMessage] = useState('');
-    const [selectedFileName, setSelectedFileName] = useState('');
+
+    // 🆕 NOUVEAUX ÉTATS POUR L'UPLOAD MULTIPLE
+    const [selectedFiles, setSelectedFiles] = useState([]);
+    const [tags, setTags] = useState('');
+    const [uploading, setUploading] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState(0);
+    const [uploadResults, setUploadResults] = useState(null);
 
     const checkAuth = useCallback(async () => {
         const token = localStorage.getItem('token');
@@ -69,39 +108,62 @@ function Admin() {
         }
     }, [isAuthenticated, loadPhotos]);
 
+    // 🆕 GESTION DES FICHIERS
     const handleFileChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setUploadForm({ ...uploadForm, photo: file });
-            setSelectedFileName(file.name);
-        }
+        const files = Array.from(e.target.files);
+        setSelectedFiles(files);
+        setUploadResults(null);
     };
 
+    const removeFile = (index) => {
+        setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+    };
+
+    // 🆕 NOUVELLE FONCTION D'UPLOAD
     const handleUpload = async (e) => {
         e.preventDefault();
-        setUploadMessage('');
 
-        if (!uploadForm.photo) {
-            setUploadMessage('error:Veuillez sélectionner une photo');
+        if (selectedFiles.length === 0) {
+            alert('Veuillez sélectionner au moins une photo');
             return;
         }
 
-        const formData = new FormData();
-        formData.append('photo', uploadForm.photo);
-        formData.append('title', uploadForm.title);
-        formData.append('description', uploadForm.description);
-        formData.append('tags', uploadForm.tags);
+        setUploading(true);
+        setUploadProgress(0);
+        setUploadResults(null);
 
         try {
-            await uploadPhoto(formData);
-            setUploadMessage('success:Photo uploadée avec succès !');
-            setUploadForm({ photo: null, title: '', description: '', tags: '' });
-            setSelectedFileName('');
-            document.getElementById('photo-input').value = '';
+            const results = await uploadMultiplePhotos(
+                selectedFiles,
+                tags,
+                (progress) => setUploadProgress(progress)
+            );
+
+            setUploadResults(results);
+            setSelectedFiles([]);
+            setTags('');
+
+            // Réinitialiser l'input file
+            const fileInput = document.getElementById('photo-input');
+            if (fileInput) fileInput.value = '';
+
+            // Recharger les photos
             loadPhotos();
+
         } catch (error) {
-            setUploadMessage('error:Erreur lors de l\'upload');
-            console.error(error);
+            console.error('Erreur upload:', error);
+            setUploadResults({
+                message: 'Erreur lors de l\'upload',
+                total: selectedFiles.length,
+                success: [],
+                failed: selectedFiles.map(f => ({
+                    filename: f.name,
+                    error: error.message || 'Erreur inconnue'
+                }))
+            });
+        } finally {
+            setUploading(false);
+            setUploadProgress(0);
         }
     };
 
@@ -239,74 +301,142 @@ function Admin() {
                     </div>
                 </div>
 
-                {/* Upload Section */}
+                {/* 🆕 NOUVELLE SECTION D'UPLOAD */}
                 <section className="admin-section">
                     <h2 className="section-title">
                         <span className="section-icon">📤</span>
-                        Uploader une nouvelle photo
+                        Uploader des photos
                     </h2>
 
                     <form onSubmit={handleUpload} className="upload-form">
+                        {/* Sélection de fichiers */}
                         <div className="form-group">
-                            <label>Photo *</label>
+                            <label>Photos *</label>
                             <div className="file-input-wrapper">
                                 <label htmlFor="photo-input" className="file-input-label">
                                     <span>📷</span>
-                                    <span>{selectedFileName || 'Choisir une photo'}</span>
+                                    <span>
+                                        {selectedFiles.length === 0
+                                            ? 'Choisir des photos'
+                                            : `${selectedFiles.length} photo(s) sélectionnée(s)`}
+                                    </span>
                                 </label>
                                 <input
                                     type="file"
                                     id="photo-input"
                                     accept="image/*"
+                                    multiple
                                     onChange={handleFileChange}
-                                    required
+                                    disabled={uploading}
                                 />
                             </div>
                         </div>
 
-                        <div className="form-row">
-                            <div className="form-group">
-                                <label htmlFor="title">Titre</label>
-                                <input
-                                    type="text"
-                                    id="title"
-                                    value={uploadForm.title}
-                                    onChange={(e) => setUploadForm({ ...uploadForm, title: e.target.value })}
-                                    placeholder="Ex: Séance famille Dupont"
-                                />
+                        {/* Liste des fichiers sélectionnés */}
+                        {selectedFiles.length > 0 && (
+                            <div className="selected-files">
+                                <h3>Fichiers sélectionnés :</h3>
+                                <ul className="file-list">
+                                    {selectedFiles.map((file, index) => (
+                                        <li key={index} className="file-item">
+                                            <span className="file-name">{file.name}</span>
+                                            <span className="file-size">
+                                                {(file.size / 1024 / 1024).toFixed(2)} MB
+                                            </span>
+                                            {!uploading && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeFile(index)}
+                                                    className="btn-remove"
+                                                >
+                                                    ✕
+                                                </button>
+                                            )}
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
+                        )}
 
-                            <div className="form-group">
-                                <label htmlFor="tags">Tags (séparés par des virgules)</label>
-                                <input
-                                    type="text"
-                                    id="tags"
-                                    placeholder="grossesse, famille, nouveau-né"
-                                    value={uploadForm.tags}
-                                    onChange={(e) => setUploadForm({ ...uploadForm, tags: e.target.value })}
-                                />
-                            </div>
-                        </div>
-
+                        {/* Tags (optionnel) */}
                         <div className="form-group">
-                            <label htmlFor="description">Description</label>
-                            <textarea
-                                id="description"
-                                value={uploadForm.description}
-                                onChange={(e) => setUploadForm({ ...uploadForm, description: e.target.value })}
-                                placeholder="Décrivez cette photo..."
+                            <label htmlFor="tags">Tags (optionnel)</label>
+                            <input
+                                type="text"
+                                id="tags"
+                                placeholder="grossesse, famille, nouveau-né..."
+                                value={tags}
+                                onChange={(e) => setTags(e.target.value)}
+                                disabled={uploading}
                             />
                         </div>
 
-                        <button type="submit" className="btn-primary">
-                            Uploader la photo
+                        {/* Barre de progression */}
+                        {uploading && (
+                            <div className="upload-progress">
+                                <div className="progress-bar">
+                                    <div
+                                        className="progress-fill"
+                                        style={{ width: `${uploadProgress}%` }}
+                                    />
+                                </div>
+                                <p className="progress-text">Upload en cours... {uploadProgress}%</p>
+                            </div>
+                        )}
+
+                        {/* Bouton d'upload */}
+                        <button
+                            type="submit"
+                            className="btn-primary"
+                            disabled={uploading || selectedFiles.length === 0}
+                        >
+                            {uploading ? 'Upload en cours...' : 'Uploader les photos'}
                         </button>
                     </form>
 
-                    {uploadMessage && (
-                        <p className={`upload-message ${uploadMessage.startsWith('success:') ? 'success' : 'error'}`}>
-                            {uploadMessage.split(':')[1]}
-                        </p>
+                    {/* 🆕 RÉSULTATS DÉTAILLÉS */}
+                    {uploadResults && (
+                        <div className="upload-results">
+                            <div className={`results-summary ${uploadResults.failed.length === 0 ? 'success' : 'partial'}`}>
+                                <h3>
+                                    {uploadResults.failed.length === 0 ? '✅ ' : '⚠️ '}
+                                    {uploadResults.message}
+                                </h3>
+                            </div>
+
+                            {uploadResults.success.length > 0 && (
+                                <div className="results-section success-section">
+                                    <h4>✅ Photos uploadées avec succès ({uploadResults.success.length})</h4>
+                                    <ul className="results-list">
+                                        {uploadResults.success.map((photo, idx) => (
+                                            <li key={idx} className="result-item success">
+                                                <span className="icon">✓</span>
+                                                <span className="name">{photo.originalName}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+
+                            {uploadResults.failed.length > 0 && (
+                                <div className="results-section error-section">
+                                    <h4>❌ Échecs ({uploadResults.failed.length})</h4>
+                                    <ul className="results-list">
+                                        {uploadResults.failed.map((failure, idx) => (
+                                            <li key={idx} className="result-item error">
+                                                <span className="icon">✗</span>
+                                                <div className="error-details">
+                                                    <span className="name">{failure.filename}</span>
+                                                    <span className="error-message">
+                                                        Erreur : {failure.error}
+                                                    </span>
+                                                </div>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+                        </div>
                     )}
                 </section>
 
