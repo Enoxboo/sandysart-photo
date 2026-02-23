@@ -20,19 +20,10 @@ function About() {
                     {/* Grid 2 colonnes : Image + Texte */}
                     <div className="about-grid fade-in">
 
-                        {/* Image de Sandy (placeholder pour l'instant) */}
+                        {/* Image de Sandy */}
                         <div className="about-image-section">
                             <div className="about-image-wrapper">
-                                <div className="about-image-placeholder">
-                                    <span className="about-image-placeholder-icon">📷</span>
-                                    <p>Photo de Sandy</p>
-                                    <p style={{ fontSize: '0.9rem', opacity: 0.7, marginTop: '0.5rem' }}>
-                                        (À ajouter plus tard)
-                                    </p>
-                                </div>
-                                {/* Quand tu auras la photo, remplace par :
-                <img src="/path/to/sandy.jpg" alt="Sandy, photographe" />
-                */}
+                                <img src="/about.webp" alt="Sandy, photographe" />
                             </div>
                         </div>
 
