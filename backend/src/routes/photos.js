@@ -15,17 +15,17 @@ const photoController = require('../controllers/photoController');
 const {verifyToken} = require('../middleware/auth');
 const fs = require('fs');
 
-
 // Multer storage configuration
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/');
+        cb(null, 'uploads/temp/');
     },
     filename: (req, file, cb) => {
         const filename = `${Date.now()}-${Math.round(Math.random() * 1E9)}${path.extname(file.originalname)}`;
         cb(null, filename);
     }
 });
+
 
 // File type validation
 const fileFilter = (req, file, cb) => {
@@ -36,29 +36,26 @@ const fileFilter = (req, file, cb) => {
     if (extname && mimetype) {
         cb(null, true);
     } else {
-        cb(new Error('Only image files are allowed!'));
+        cb(new Error('Seuls les fichiers image sont autorisés (jpg, png, gif, webp)'));
     }
 };
 
-// Multer upload configuration
-const upload = multer({
+// 🆕 Configuration pour UPLOAD MULTIPLE (max 20 photos à la fois)
+const uploadMultiple = multer({
+    storage: storage,
+    fileFilter: fileFilter,
+    limits: {
+        fileSize: 20 * 1024 * 1024,  // 20MB par fichier
+        files: 20  // Max 20 fichiers simultanés
+    }
+});
+
+// Configuration pour upload simple (ancienne méthode)
+const uploadSingle = multer({
     storage: storage,
     fileFilter: fileFilter,
     limits: {fileSize: 20 * 1024 * 1024}
 });
-
-const fixFilePermissions = (req, res, next) => {
-    if (req.file) {
-        try {
-            // Juste changer les permissions pour que www-data puisse lire
-            fs.chmodSync(req.file.path, 0o664);  // ← 664 = lecture pour le groupe
-            console.log(`✅ Permissions corrigées: ${req.file.filename}`);
-        } catch (error) {
-            console.error('❌ Erreur permissions:', error.message);
-        }
-    }
-    next();
-};
 
 // Public routes
 router.get('/', photoController.getAllPhotos);
@@ -68,7 +65,16 @@ router.get('/tag/:tag', photoController.getPhotosByTag);
 router.get('/:id', photoController.getPhotoById);
 
 // Protected routes (authentication required)
-router.post('/', verifyToken, upload.single('photo'), fixFilePermissions, photoController.createPhoto);
+
+router.post(
+    '/upload-multiple',
+    verifyToken,
+    uploadMultiple.array('photos', 20),
+    photoController.uploadMultiplePhotos
+);
+
+router.post('/', verifyToken, uploadSingle.single('photo'), photoController.createPhoto);
+
 router.put('/:id', verifyToken, photoController.updatePhoto);
 router.delete('/:id', verifyToken, photoController.deletePhoto);
 

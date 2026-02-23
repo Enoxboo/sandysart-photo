@@ -2,7 +2,7 @@ const db = require('../config/database');
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
-const { AppError } = require('../middleware/errorHandler');
+const {AppError} = require('../middleware/errorHandler');
 
 /**
  * Wrapper pour gérer les erreurs async
@@ -23,7 +23,7 @@ exports.getAllPhotos = asyncHandler(async (req, res) => {
  * Retrieve a single photo by ID
  */
 exports.getPhotoById = asyncHandler(async (req, res) => {
-    const { id } = req.params;
+    const {id} = req.params;
 
     if (!id || isNaN(id)) {
         throw new AppError('ID invalide', 400, 'INVALID_ID');
@@ -58,7 +58,7 @@ exports.getHeroPhotos = asyncHandler(async (req, res) => {
  * Retrieve photos filtered by tag
  */
 exports.getPhotosByTag = asyncHandler(async (req, res) => {
-    const { tag } = req.params;
+    const {tag} = req.params;
 
     if (!tag || tag.trim() === '') {
         throw new AppError('Tag invalide', 400, 'INVALID_TAG');
@@ -69,41 +69,129 @@ exports.getPhotosByTag = asyncHandler(async (req, res) => {
 });
 
 /**
- * Create a new photo entry
+ * Upload multiple simplifié (sans titre/description)
+ */
+exports.uploadMultiplePhotos = asyncHandler(async (req, res) => {
+    if (!req.files || req.files.length === 0) {
+        throw new AppError('Aucun fichier uploadé', 400, 'NO_FILE');
+    }
+
+    const {tags} = req.body;
+    const results = { success: [], failed: [] };
+
+    const uploadsDir = path.join(__dirname, '../../uploads');
+
+    const stmt = db.prepare(`
+        INSERT INTO photos (filename, original_name, tags)
+        VALUES (?, ?, ?)
+    `);
+
+    for (const file of req.files) {
+        try {
+            // Le fichier est déjà dans uploads/temp/ grâce à multer
+            const tempPath = file.path;
+            const finalFilename = file.filename;
+            const finalPath = path.join(uploadsDir, finalFilename);
+
+            // Optimiser l'image avec un nom temporaire différent
+            const optimizedTempPath = tempPath + '.optimized';
+
+            await sharp(tempPath)
+                .resize(1920, null, { withoutEnlargement: true, fit: 'inside' })
+                .jpeg({quality: 85})
+                .toFile(optimizedTempPath);
+
+            // Déplacer l'image optimisée vers uploads/
+            fs.renameSync(optimizedTempPath, finalPath);
+
+            // Supprimer l'original du dossier temp/
+            fs.unlinkSync(tempPath);
+
+            // Corriger les permissions
+            fs.chmodSync(finalPath, 0o664);
+
+            // Tenter de changer le groupe (peut échouer sans sudo)
+            if (process.platform !== 'win32') {
+                try {
+                    const uid = process.getuid();
+                    const gid = process.getgid();
+                    fs.chownSync(finalPath, uid, gid);
+                } catch (chownErr) {
+                    console.warn('⚠️  Impossible de changer le groupe:', chownErr.message);
+                }
+            }
+
+            const result = stmt.run(finalFilename, file.originalname, tags || null);
+
+            results.success.push({
+                id: result.lastInsertRowid,
+                filename: finalFilename,
+                originalName: file.originalname
+            });
+
+        } catch (error) {
+            console.error(`❌ Erreur upload ${file.originalname}:`, error);
+
+            // Nettoyer les fichiers temporaires
+            if (fs.existsSync(file.path)) {
+                try {
+                    fs.unlinkSync(file.path);
+                } catch (unlinkErr) {
+                    console.error('⚠️  Impossible de supprimer le fichier temp:', unlinkErr.message);
+                }
+            }
+
+            results.failed.push({
+                filename: file.originalname,
+                error: error.message || 'Erreur inconnue',
+                code: error.code || 'PROCESSING_ERROR'
+            });
+        }
+    }
+
+    const statusCode = results.failed.length === 0 ? 201 :
+        results.success.length === 0 ? 500 : 207;
+
+    res.status(statusCode).json({
+        message: `${results.success.length} photo(s) uploadée(s), ${results.failed.length} échec(s)`,
+        total: req.files.length,
+        success: results.success,
+        failed: results.failed
+    });
+});
+
+
+/**
+ * Create a new photo entry (ANCIENNE FONCTION - garder pour compatibilité)
  */
 exports.createPhoto = asyncHandler(async (req, res) => {
     if (!req.file) {
         throw new AppError('Aucun fichier uploadé', 400, 'NO_FILE');
     }
 
-    const { title, description, tags } = req.body;
+    const {title, description, tags} = req.body;
     const originalFilename = req.file.filename;
     const originalPath = req.file.path;
-
-    // Nouveau nom pour la version optimisée
-    const optimizedFilename = originalFilename;
-    const optimizedPath = path.join(__dirname, '../../uploads', optimizedFilename);
+    const optimizedPath = path.join(__dirname, '../../uploads', originalFilename);
 
     try {
-        // Optimiser l'image
         await sharp(originalPath)
             .resize(1920, null, {
                 withoutEnlargement: true,
                 fit: 'inside'
             })
-            .jpeg({ quality: 85 })
+            .jpeg({quality: 85})
             .toFile(optimizedPath);
 
-        // Supprimer l'original
         fs.unlinkSync(originalPath);
 
         const stmt = db.prepare(`
-      INSERT INTO photos (filename, original_name, title, description, tags)
-      VALUES (?, ?, ?, ?, ?)
-    `);
+            INSERT INTO photos (filename, original_name, title, description, tags)
+            VALUES (?, ?, ?, ?, ?)
+        `);
 
         const result = stmt.run(
-            optimizedFilename,
+            originalFilename,
             req.file.originalname,
             title || null,
             description || null,
@@ -113,16 +201,15 @@ exports.createPhoto = asyncHandler(async (req, res) => {
         res.status(201).json({
             message: 'Photo uploadée et optimisée avec succès',
             id: result.lastInsertRowid,
-            filename: optimizedFilename
+            filename: originalFilename
         });
     } catch (sharpError) {
         console.error('❌ Erreur optimisation image:', sharpError);
 
-        // Si l'optimisation échoue, utilise l'original
         const stmt = db.prepare(`
-      INSERT INTO photos (filename, original_name, title, description, tags)
-      VALUES (?, ?, ?, ?, ?)
-    `);
+            INSERT INTO photos (filename, original_name, title, description, tags)
+            VALUES (?, ?, ?, ?, ?)
+        `);
 
         const result = stmt.run(
             originalFilename,
@@ -144,19 +231,23 @@ exports.createPhoto = asyncHandler(async (req, res) => {
  * Update existing photo metadata
  */
 exports.updatePhoto = asyncHandler(async (req, res) => {
-    const { id } = req.params;
+    const {id} = req.params;
 
     if (!id || isNaN(id)) {
         throw new AppError('ID invalide', 400, 'INVALID_ID');
     }
 
-    const { title, description, tags, is_week_photo, is_hero_photo } = req.body;
+    const {title, description, tags, is_week_photo, is_hero_photo} = req.body;
 
     const stmt = db.prepare(`
-    UPDATE photos
-    SET title = ?, description = ?, tags = ?, is_week_photo = ?, is_hero_photo = ?
-    WHERE id = ?
-  `);
+        UPDATE photos
+        SET title         = ?,
+            description   = ?,
+            tags          = ?,
+            is_week_photo = ?,
+            is_hero_photo = ?
+        WHERE id = ?
+    `);
 
     const result = stmt.run(
         title || null,
@@ -181,7 +272,7 @@ exports.updatePhoto = asyncHandler(async (req, res) => {
  * Delete a photo and its associated file
  */
 exports.deletePhoto = asyncHandler(async (req, res) => {
-    const { id } = req.params;
+    const {id} = req.params;
 
     if (!id || isNaN(id)) {
         throw new AppError('ID invalide', 400, 'INVALID_ID');
@@ -193,18 +284,15 @@ exports.deletePhoto = asyncHandler(async (req, res) => {
         throw new AppError('Photo non trouvée', 404, 'PHOTO_NOT_FOUND');
     }
 
-    // Supprimer le fichier physique
     const filePath = path.join(__dirname, '../../uploads', photo.filename);
     if (fs.existsSync(filePath)) {
         try {
             fs.unlinkSync(filePath);
         } catch (fsError) {
             console.error('⚠️  Erreur suppression fichier:', fsError);
-            // Continue quand même la suppression en BDD
         }
     }
 
-    // Supprimer l'entrée en BDD
     db.prepare('DELETE FROM photos WHERE id = ?').run(id);
 
     res.json({
