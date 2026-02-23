@@ -10,7 +10,7 @@
     text-align: center;
     background-image: url('../../public/about_banner.webp');
     background-size: cover;
-    background-position: center center;
+    background-position: center 30%;
     background-repeat: no-repeat;
     color: var(--white);
     position: relative;
