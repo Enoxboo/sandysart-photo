@@ -177,18 +177,18 @@
 .intro-section {
     padding: var(--spacing-xl) 0;
     text-align: center;
-    max-width: 900px;
+    max-width: 800px;
     margin: 0 auto;
 }
 
 .intro-section h2 {
-    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-size: clamp(1.8rem, 5vw, 4rem);
     font-weight: 300;
     margin-bottom: var(--spacing-md);
 }
 
 .intro-section p {
-    font-size: 1.1rem;
+    font-size: clamp(0.95rem, 2.5vw, 1.1rem);
     line-height: 2;
     color: var(--text-secondary);
     margin-bottom: var(--spacing-sm);
@@ -271,13 +271,13 @@
 }
 
 .cta-simple h2 {
-    font-size: clamp(2rem, 4vw, 3rem);
+    font-size: clamp(1.6rem, 4vw, 3rem);
     font-weight: 300;
     margin-bottom: var(--spacing-md);
 }
 
 .cta-simple p {
-    font-size: 1.1rem;
+    font-size: clamp(0.95rem, 2.5vw, 1.1rem);
     color: var(--text-secondary);
     margin-bottom: var(--spacing-lg);
     max-width: 600px;
@@ -297,14 +297,31 @@
 
 @media (max-width: 768px) {
     .hero-overlay h1 {
-        font-size: 2.5rem;
+        font-size: clamp(2rem, 8vw, 3rem);
+        letter-spacing: 2px;
+    }
+
+    .hero-overlay p {
+        font-size: 0.95rem;
+        padding: 0 1rem;
     }
 
     .masonry-grid {
         column-count: 1;
+        column-gap: 0;
+    }
+
+    .masonry-item {
+        margin-bottom: 0.75rem;
     }
 
     .carousel-indicators {
         bottom: 1.5rem;
+    }
+
+    /* Bouton hero */
+    .hero-overlay .btn {
+        padding: 1rem 2rem;
+        font-size: 0.8rem;
     }
 }

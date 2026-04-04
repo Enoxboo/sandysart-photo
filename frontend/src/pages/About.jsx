@@ -165,7 +165,7 @@ function About() {
                             </div>
                             <div className="contact-item">
                                 <span className="contact-icon">📍</span>
-                                <span>Basée à Vernet</span>
+                                <span>Basée au 203 rue des vieilles vignes - 31810 Le Vernet</span>
                             </div>
                         </div>
                     </section>

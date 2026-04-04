@@ -48,24 +48,27 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1 {
-    font-size: clamp(3rem, 8vw, 6rem);
+    font-size: clamp(2rem, 8vw, 6rem);
     font-weight: 300;
     margin-bottom: var(--spacing-md);
+    line-height: 1.15;
 }
 
 h2 {
-    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-size: clamp(1.6rem, 5vw, 3.5rem);
     font-weight: 400;
     margin-bottom: var(--spacing-md);
+    line-height: 1.2;
 }
 
 h3 {
-    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-size: clamp(1.2rem, 3vw, 2rem);
     margin-bottom: var(--spacing-sm);
+    line-height: 1.3;
 }
 
 p {
-    font-size: 1rem;
+    font-size: clamp(0.95rem, 2.5vw, 1rem);
     font-weight: 300;
     color: var(--text-secondary);
     margin-bottom: var(--spacing-sm);
@@ -79,7 +82,7 @@ p {
 .container {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 0 var(--spacing-md);
+    padding: 0 clamp(1.25rem, 5vw, 2rem);
 }
 
 .container-full {
@@ -212,10 +215,26 @@ section {
    UTILITAIRES
    ============================================ */
 
-.text-center { text-align: center; }
-.text-uppercase { text-transform: uppercase; }
-.letter-spacing { letter-spacing: 3px; }
+.text-center {
+    text-align: center;
+}
 
-.mb-sm { margin-bottom: var(--spacing-sm); }
-.mb-md { margin-bottom: var(--spacing-md); }
-.mb-lg { margin-bottom: var(--spacing-lg); }
+.text-uppercase {
+    text-transform: uppercase;
+}
+
+.letter-spacing {
+    letter-spacing: 3px;
+}
+
+.mb-sm {
+    margin-bottom: var(--spacing-sm);
+}
+
+.mb-md {
+    margin-bottom: var(--spacing-md);
+}
+
+.mb-lg {
+    margin-bottom: var(--spacing-lg);
+}

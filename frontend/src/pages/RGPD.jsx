@@ -137,7 +137,7 @@ function RGPD() {
                                 <h3>Éditeur du site</h3>
                                 <p>Sandy's Art Photographies</p>
                                 <p>Représenté par Sandy LIMOUSIN</p>
-                                <p>Vernet, France</p>
+                                <p>203 rue des vieilles vignes - 31810 Le Vernet - France</p>
                             </div>
                             <div className="mention-item">
                                 <h3>Contact</h3>

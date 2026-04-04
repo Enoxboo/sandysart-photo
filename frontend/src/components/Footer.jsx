@@ -36,11 +36,11 @@ function Footer() {
                                 sandysartphotographies@hotmail.com
                             </a>
                             <a href="tel:+33684902214">06 84 90 22 14</a>
-                            <p>Vernet, France</p>
+                            <p>203 rue des vieilles vignes - 31810 Le Vernet</p>
                         </div>
                     </div>
 
-                    {/* Colonne 4 - Réseaux (optionnel pour plus tard) */}
+                    {/* Colonne 4 - Réseaux */}
                     <div className="footer-column">
                         <h4 className="footer-title">Suivez-moi</h4>
                         <div className="footer-social">

@@ -393,26 +393,53 @@
     .about-image-section {
         position: relative;
         top: 0;
+        max-width: 480px;
+        margin: 0 auto;
+    }
+
+    .about-image-wrapper {
+        aspect-ratio: 4/3;
     }
 
     .about-stats {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(3, 1fr);
         gap: var(--spacing-md);
     }
 
     .values-grid {
         grid-template-columns: 1fr;
     }
+
+    .contact-section {
+        padding: var(--spacing-lg) var(--spacing-md);
+    }
 }
 
 @media (max-width: 768px) {
     .about-hero {
-        height: 40vh;
+        min-height: 35vh;
     }
 
-    .about-hero h1 {
+    .about-intro {
+        font-size: 1.1rem;
+        line-height: 1.9;
+    }
+
+    .about-section h2 {
+        font-size: clamp(1.4rem, 5vw, 2rem);
+    }
+
+    .about-section p {
+        font-size: 0.95rem;
+    }
+
+    .about-stats {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-sm);
+    }
+
+    .stat-number {
         font-size: 2.5rem;
-        letter-spacing: 3px;
     }
 
     .contact-info {
@@ -420,6 +447,12 @@
     }
 
     .contact-item {
-        font-size: 1rem;
+        font-size: 0.95rem;
+    }
+
+    .contact-item a {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
     }
 }

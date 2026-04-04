@@ -25,7 +25,7 @@ function SEO({
         phone: '+33684902214',
         email: 'sandysartphotographies@hotmail.com',
         address: {
-            street: 'Le Vernet',
+            street: '203 rue des vieilles vignes',
             city: 'Le Vernet',
             region: 'Haute-Garonne',
             postalCode: '31810',
