@@ -20,14 +20,6 @@ const {generateToken, verifyToken} = require('../middleware/auth');
 router.post('/login', async (req, res) => {
     const {username, password} = req.body;
 
-
-    console.log('=== LOGIN ATTEMPT ===');
-    console.log('Username reçu:', username);
-    console.log('Username attendu:', process.env.ADMIN_USERNAME);
-    console.log('Hash attendu:', process.env.ADMIN_PASSWORD_HASH);
-    console.log('Password reçu (longueur):', password?.length);
-    console.log('=====================');
-
     if (!username || !password) {
         return res.status(400).json({error: 'Username and password are required'});
     }
