@@ -1,23 +1,18 @@
-/**
- * @fileoverview Authentication routes for admin login and token verification
- * @requires express
- * @requires ../middleware/auth
- */
-
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const rateLimit = require('express-rate-limit');
 const router = express.Router();
 const {generateToken, verifyToken} = require('../middleware/auth');
 
-/**
- * Admin login endpoint with bcrypt password verification
- * @route POST /api/auth/login
- * @param {Object} req.body - Login credentials
- * @param {string} req.body.username - Admin username
- * @param {string} req.body.password - Admin password (plain text)
- * @returns {Object} JWT token and username on success
- */
-router.post('/login', async (req, res) => {
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10,
+    message: {error: 'Trop de tentatives de connexion. Réessayez dans 15 minutes.'},
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
+router.post('/login', loginLimiter, async (req, res) => {
     const {username, password} = req.body;
 
     if (!username || !password) {
@@ -48,13 +43,6 @@ router.post('/login', async (req, res) => {
     }
 });
 
-
-/**
- * Token verification endpoint
- * @route GET /api/auth/verify
- * @middleware verifyToken - JWT validation required
- * @returns {Object} Validation status and username
- */
 router.get('/verify', verifyToken, (req, res) => {
     res.json({
         valid: true,
