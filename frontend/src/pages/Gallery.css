@@ -3,7 +3,8 @@
    ============================================ */
 
 .gallery-hero {
-    height: 60vh;
+    min-height: 60vh;
+    padding-top: clamp(80px, 12vw, 120px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -21,8 +22,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background:
-            url('data:image/svg+xml,<svg width="60" height="60" xmlns="http://www.w3.org/2000/svg"><rect width="1" height="1" fill="rgba(255,255,255,0.05)"/></svg>');
+    background: url('data:image/svg+xml,<svg width="60" height="60" xmlns="http://www.w3.org/2000/svg"><rect width="1" height="1" fill="rgba(255,255,255,0.05)"/></svg>');
     background-size: 60px 60px;
     opacity: 0.3;
 }
@@ -56,7 +56,7 @@
 
 .gallery-filters {
     position: sticky;
-    top: 60px;
+    top: 72px;
     background: rgba(250, 250, 250, 0.98);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
@@ -161,7 +161,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 60%);
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, transparent 60%);
     display: flex;
     flex-direction: column;
     justify-content: flex-end;

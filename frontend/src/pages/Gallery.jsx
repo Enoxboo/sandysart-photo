@@ -162,10 +162,6 @@ function Gallery() {
                             Passionnée par les détails, je mets à profit plus de 15 ans d'expérience pour capturer des
                             instants authentiques, chargés d'émotion et de sincérité.
                         </p>
-                        <p>
-                            Mon objectif ? Vous sublimer et rendre vos souvenirs uniques. Chaque image raconte une histoire…
-                            La vôtre.
-                        </p>
                     </div>
                 </div>
             </section>

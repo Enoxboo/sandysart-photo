@@ -3,7 +3,8 @@
    ============================================ */
 
 .about-hero {
-    height: 50vh;
+    min-height: 50vh;
+    padding-top: clamp(80px, 12vw, 120px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -20,7 +21,7 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.35) 100%);
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.35) 100%);
     z-index: 0;
 }
 
