@@ -1,5 +1,6 @@
 import './Contact.css';
 import SEO from '../components/SEO';
+import { getPhone, getPhoneTel } from '../utils/contact';
 
 function Contact() {
     return (
@@ -40,8 +41,8 @@ function Contact() {
                             Pour réserver votre séance ou obtenir un devis personnalisé
                         </p>
 
-                        <a href="tel:+33684902214" className="contact-phone-link">
-                            06 84 90 22 14
+                        <a href={`tel:${getPhoneTel()}`} className="contact-phone-link">
+                            {getPhone()}
                         </a>
 
                         <div className="contact-card-info">

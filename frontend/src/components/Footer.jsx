@@ -1,5 +1,6 @@
 import {Link} from 'react-router-dom';
 import './Footer.css';
+import { getEmail, getPhone, getPhoneTel } from '../utils/contact';
 
 function Footer() {
     const currentYear = new Date().getFullYear();
@@ -32,10 +33,8 @@ function Footer() {
                     <div className="footer-column">
                         <h4 className="footer-title">Contact</h4>
                         <div className="footer-contact">
-                            <a href="mailto:sandysartphotographies@hotmail.com">
-                                sandysartphotographies@hotmail.com
-                            </a>
-                            <a href="tel:+33684902214">06 84 90 22 14</a>
+                            <a href={`mailto:${getEmail()}`}>{getEmail()}</a>
+                            <a href={`tel:${getPhoneTel()}`}>{getPhone()}</a>
                             <p>203 rue des vieilles vignes - 31810 Le Vernet</p>
                         </div>
                     </div>

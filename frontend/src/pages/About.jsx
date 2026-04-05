@@ -1,5 +1,6 @@
 import './About.css';
 import SEO from '../components/SEO';
+import { getEmail, getPhone, getPhoneTel } from '../utils/contact';
 
 function About() {
     return (
@@ -155,13 +156,11 @@ function About() {
                         <div className="contact-info">
                             <div className="contact-item">
                                 <span className="contact-icon">📧</span>
-                                <a href="mailto:sandysartphotographies@hotmail.com">
-                                    sandysartphotographies@hotmail.com
-                                </a>
+                                <a href={`mailto:${getEmail()}`}>{getEmail()}</a>
                             </div>
                             <div className="contact-item">
                                 <span className="contact-icon">📱</span>
-                                <a href="tel:+33684902214">06 84 90 22 14</a>
+                                <a href={`tel:${getPhoneTel()}`}>{getPhone()}</a>
                             </div>
                             <div className="contact-item">
                                 <span className="contact-icon">📍</span>

@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import {useEffect} from 'react';
+import {useLocation} from 'react-router-dom';
 
 /**
  * Composant SEO pour gérer les balises meta de chaque page
@@ -19,13 +19,13 @@ function SEO({
     // Informations de base du site
     const siteInfo = {
         name: "Sandy's Art Photographies",
-        url: 'https://sandysartphotographies.com',
+        url: import.meta.env.VITE_SITE_URL || '',
         locale: 'fr_FR',
         author: 'Sandy Limousin',
-        phone: '+33684902214',
-        email: 'sandysartphotographies@hotmail.com',
+        phone: import.meta.env.VITE_CONTACT_PHONE_TEL || '',
+        email: import.meta.env.VITE_CONTACT_EMAIL || '',
         address: {
-            street: '203 rue des vieilles vignes',
+            street: import.meta.env.VITE_CONTACT_ADDRESS || '',
             city: 'Le Vernet',
             region: 'Haute-Garonne',
             postalCode: '31810',

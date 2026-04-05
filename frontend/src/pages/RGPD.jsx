@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import './RGPD.css';
 import SEO from "../components/SEO.jsx";
+import { getEmail, getPhone, getPhoneTel } from '../utils/contact';
 
 function RGPD() {
     const location = useLocation();
@@ -94,8 +95,8 @@ function RGPD() {
                         </p>
                         <p>
                             Vous pouvez exercer ces droits en envoyant un mail à{' '}
-                            <a href="mailto:sandysartphotographies@hotmail.com">sandysartphotographies@hotmail.com</a>{' '}
-                            ou par téléphone au <a href="tel:+33684902214">06 84 90 22 14</a>.
+                            <a href={`mailto:${getEmail()}`}>{getEmail()}</a>{' '}
+                            ou par téléphone au <a href={`tel:${getPhoneTel()}`}>{getPhone()}</a>.
                         </p>
                     </section>
 
@@ -141,8 +142,8 @@ function RGPD() {
                             </div>
                             <div className="mention-item">
                                 <h3>Contact</h3>
-                                <p>Email : sandysartphotographies@hotmail.com</p>
-                                <p>Téléphone : 06 84 90 22 14</p>
+                                <p>Email : {getEmail()}</p>
+                                <p>Téléphone : {getPhone()}</p>
                             </div>
                             <div className="mention-item">
                                 <h3>Hébergement</h3>
@@ -156,7 +157,7 @@ function RGPD() {
                     <section className="rgpd-contact fade-in">
                         <h3>Une question concernant vos données ?</h3>
                         <p>N'hésitez pas à me contacter pour toute demande relative à vos données personnelles.</p>
-                        <a href="mailto:sandysartphotographies@hotmail.com" className="btn">
+                        <a href={`mailto:${getEmail()}`} className="btn">
                             Me contacter
                         </a>
                     </section>
