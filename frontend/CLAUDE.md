@@ -219,17 +219,217 @@ Preconnect links added to `index.html`.
 
 ---
 
-## Remaining Work (not auto-fixable)
+## Remaining Manual Work
 
-| Item | Why blocked | What's needed |
-|------|------------|---------------|
-| SEC-2 JWT in localStorage | Requires backend | Move auth to `httpOnly` cookie on backend |
-| SEC-1 Proper OG image | Requires design | Create 1200×630 branded PNG at `public/og-image.jpg` |
-| PERF-2 Responsive images | Requires backend | Backend generates resized variants, expose as srcset |
-| PERF-5 Large favicon PNG | Requires image editor | Re-export `android-chrome-512x512.png` at < 50 KB |
-| PERF-4 Self-host fonts | Requires font files | Download WOFF2 for Cormorant Garamond + Inter, add @font-face |
-| UI-1 Contact form backend | Requires backend | Implement `POST /api/contact` → send email to Sandy |
-| PERF-1 Image aspect-ratio | Minor CLS fix | Add `aspect-ratio` CSS to `.gallery-item-image img` etc. |
+Do these in priority order. Each section includes exact steps.
+
+---
+
+### 1. Backend contact form endpoint *(high impact — form silently fails without this)*
+
+The Contact page form posts to `POST /api/contact`. This route does not yet exist in the backend.
+
+**Install nodemailer in the backend:**
+```bash
+npm install nodemailer
+```
+
+**Create the route** (adapt path to your backend structure):
+```js
+// routes/contact.js
+const nodemailer = require('nodemailer');
+
+router.post('/contact', async (req, res) => {
+  const { name, email, phone, sessionType, message } = req.body;
+  if (!name || !email || !message) {
+    return res.status(400).json({ error: 'Champs requis manquants' });
+  }
+
+  const transporter = nodemailer.createTransport({
+    service: 'hotmail',
+    auth: {
+      user: process.env.CONTACT_EMAIL,
+      pass: process.env.CONTACT_EMAIL_PASSWORD,
+    },
+  });
+
+  await transporter.sendMail({
+    from: process.env.CONTACT_EMAIL,
+    to: process.env.CONTACT_EMAIL,
+    replyTo: email,
+    subject: `Demande de séance – ${sessionType || 'Non précisé'} – ${name}`,
+    text: `Nom : ${name}\nEmail : ${email}\nTéléphone : ${phone || '—'}\nType : ${sessionType || '—'}\n\n${message}`,
+  });
+
+  res.json({ ok: true });
+});
+```
+
+**Add to backend `.env`:**
+```
+CONTACT_EMAIL=sandysartphotographies@hotmail.com
+CONTACT_EMAIL_PASSWORD=your_hotmail_password
+```
+
+> If Hotmail has 2FA enabled, generate an app password in Microsoft account security settings.
+
+---
+
+### 2. Create the OG social-share image *(high impact — social shares show no preview)*
+
+`SEO.jsx` and `index.html` currently fall back to `/about.webp`. A proper branded card is better.
+
+1. Go to **canva.com** → Create design → Custom size → **1200 × 630 px**
+2. Add a portfolio photo as background, darkened slightly
+3. Overlay: `Sandy's Art Photographies` in Cormorant Garamond, gold `#C9A86A`, plus your tagline
+4. Download → **JPG** → rename to `og-image.jpg`
+5. Place at `frontend/public/og-image.jpg`
+6. In `index.html` update the two static OG image lines:
+   ```html
+   <meta property="og:image" content="https://sandysartphotographies.com/og-image.jpg" />
+   <meta name="twitter:image" content="https://sandysartphotographies.com/og-image.jpg" />
+   ```
+7. In `src/components/SEO.jsx` line 14 restore:
+   ```js
+   image = '/og-image.jpg',
+   ```
+
+---
+
+### 3. Self-host Google Fonts *(GDPR compliance + faster FCP)*
+
+Currently fonts load from `fonts.googleapis.com`, sending visitor IPs to Google. French law (RGPD) requires a legal basis for this transfer.
+
+1. Go to **[gwfh.mranftl.com](https://gwfh.mranftl.com/fonts)**
+2. Search **Cormorant Garamond** → select weights `300, 400, 500, 600, 700` → copy the CSS block → download ZIP
+3. Search **Inter** → select weights `300, 400, 500, 600` → copy the CSS block → download ZIP
+4. Create `frontend/public/fonts/` and extract only the `.woff2` files from both ZIPs into it
+5. In `src/index.css` **replace** the `@import url('https://fonts.googleapis.com/...')` line with the `@font-face` blocks from the helper. Example structure:
+   ```css
+   @font-face {
+     font-family: 'Cormorant Garamond';
+     font-style: normal;
+     font-weight: 300;
+     font-display: swap;
+     src: url('/fonts/cormorant-garamond-v22-latin-300.woff2') format('woff2');
+   }
+   /* repeat for each weight */
+
+   @font-face {
+     font-family: 'Inter';
+     font-style: normal;
+     font-weight: 400;
+     font-display: swap;
+     src: url('/fonts/inter-v13-latin-regular.woff2') format('woff2');
+   }
+   /* repeat for each weight */
+   ```
+6. Remove the two `<link rel="preconnect" href="https://fonts.googleapis.com">` lines from `index.html` — no longer needed
+
+---
+
+### 4. Compress large favicons *(5 min)*
+
+- `public/android-chrome-512x512.png` — **424 KB**, should be under 50 KB
+- `public/apple-touch-icon.png` — **62 KB**, target under 20 KB
+
+1. Go to **[squoosh.app](https://squoosh.app)**
+2. Drop in the file → set format to **OxiPNG** → reduce quality until under target size
+3. Download and replace the file in `public/`
+
+---
+
+### 5. Move JWT auth to httpOnly cookie *(security — prevents XSS token theft)*
+
+This requires coordinated backend + frontend changes.
+
+**Backend:**
+
+Install cookie-parser:
+```bash
+npm install cookie-parser
+```
+
+Wire it up in your Express app:
+```js
+app.use(require('cookie-parser')());
+```
+
+On `POST /auth/login`, set a cookie instead of returning the token in JSON:
+```js
+res.cookie('token', jwtToken, {
+  httpOnly: true,    // JS cannot read it — blocks XSS theft
+  secure: true,      // HTTPS only
+  sameSite: 'strict',
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+});
+res.json({ ok: true });
+```
+
+On all protected routes, read from `req.cookies.token` instead of `Authorization` header.
+
+Add a logout route:
+```js
+router.post('/auth/logout', (req, res) => {
+  res.clearCookie('token').json({ ok: true });
+});
+```
+
+**Frontend (`src/services/api.js`):**
+
+Remove the JWT interceptor and add `withCredentials`:
+```js
+const api = axios.create({
+  baseURL: '/api',
+  withCredentials: true,  // sends cookie automatically
+});
+// delete the interceptors.request.use block entirely
+```
+
+**Frontend (`src/pages/Admin.jsx`):**
+
+- Remove all `localStorage.getItem/setItem/removeItem('token')` calls
+- On login success: just call `setIsAuthenticated(true)`
+- On logout: call `await api.post('/auth/logout')` then `setIsAuthenticated(false)`
+- The `uploadMultiplePhotos` XHR function at the top also reads `localStorage` — remove that line and add `withCredentials: true` to the XHR request instead:
+  ```js
+  xhr.withCredentials = true;
+  // remove: xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+  ```
+
+---
+
+### 6. Responsive images with srcset *(performance — mobile visitors download full-res photos)*
+
+Requires backend changes first, then frontend.
+
+**Backend — generate resized variants on upload:**
+```bash
+npm install sharp
+```
+```js
+const sharp = require('sharp');
+// after saving the original file:
+await sharp(originalPath).resize(400).webp({ quality: 80 }).toFile(`${baseName}-400w.webp`);
+await sharp(originalPath).resize(800).webp({ quality: 80 }).toFile(`${baseName}-800w.webp`);
+await sharp(originalPath).resize(1600).webp({ quality: 80 }).toFile(`${baseName}-1600w.webp`);
+// store the base filename (without extension) in the DB so frontend can reconstruct paths
+```
+
+**Frontend — update `<img>` tags in `Gallery.jsx` and `Home.jsx`:**
+```jsx
+<img
+  src={`/uploads/${photo.filename}`}
+  srcSet={`
+    /uploads/${photo.basename}-400w.webp 400w,
+    /uploads/${photo.basename}-800w.webp 800w,
+    /uploads/${photo.basename}-1600w.webp 1600w
+  `}
+  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+  alt={photo.title || photo.original_name}
+  loading="lazy"
+/>
+```
 
 ---
 
