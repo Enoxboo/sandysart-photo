@@ -214,6 +214,180 @@
 }
 
 /* ============================================
+   FORMULAIRE DE CONTACT
+   ============================================ */
+
+.contact-form-wrapper {
+    max-width: 800px;
+    margin: 0 auto var(--spacing-xl);
+    background: var(--white);
+    padding: var(--spacing-xl);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.contact-form-wrapper h2 {
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    font-weight: 400;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
+    text-align: center;
+}
+
+.contact-form-subtitle {
+    text-align: center;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-lg);
+}
+
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.contact-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-field label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    letter-spacing: 0.5px;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 300;
+    color: var(--text-primary);
+    background: var(--background);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(201, 168, 106, 0.15);
+}
+
+.form-field input:disabled,
+.form-field select:disabled,
+.form-field textarea:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.form-field textarea {
+    resize: vertical;
+    min-height: 140px;
+    line-height: 1.7;
+}
+
+.contact-form-submit {
+    align-self: center;
+    min-width: 220px;
+}
+
+.contact-form-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.contact-form-error {
+    color: #c0392b;
+    text-align: center;
+    font-size: 0.95rem;
+    padding: 0.75rem 1rem;
+    background: rgba(192, 57, 43, 0.08);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid #c0392b;
+    margin-bottom: 0;
+}
+
+.contact-form-success {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    background: rgba(46, 125, 50, 0.08);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid #2e7d32;
+    text-align: left;
+}
+
+.contact-form-success p {
+    margin: 0;
+    color: #2e7d32;
+    font-size: 1.05rem;
+}
+
+/* ============================================
+   RÉSEAUX SOCIAUX
+   ============================================ */
+
+.contact-social {
+    max-width: 700px;
+    margin: 0 auto var(--spacing-xl);
+    text-align: center;
+}
+
+.contact-social h3 {
+    font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+    font-weight: 400;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-md);
+}
+
+.contact-social-links {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+.contact-social-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.875rem 1.75rem;
+    border: 1px solid var(--text-primary);
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-primary);
+    transition: all var(--transition-normal);
+}
+
+.contact-social-btn:hover {
+    background: var(--text-primary);
+    color: var(--white);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* ============================================
    CTA VERS PORTFOLIO
    ============================================ */
 
@@ -310,5 +484,13 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
+    }
+
+    .contact-form-wrapper {
+        padding: var(--spacing-md) var(--spacing-sm);
+    }
+
+    .contact-form-row {
+        grid-template-columns: 1fr;
     }
 }

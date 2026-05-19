@@ -497,6 +497,23 @@
     white-space: nowrap;
 }
 
+.delete-confirm {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.delete-confirm span {
+    font-size: 0.8rem;
+    color: #dc3545;
+    font-weight: 500;
+}
+
+.delete-confirm button {
+    flex: 1;
+}
+
 /* Empty state */
 .empty-state {
     text-align: center;

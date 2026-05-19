@@ -49,6 +49,7 @@ function Admin() {
     const [loginError, setLoginError] = useState('');
 
     const [photos, setPhotos] = useState([]);
+    const [confirmDeleteId, setConfirmDeleteId] = useState(null);
 
     // 🆕 NOUVEAUX ÉTATS POUR L'UPLOAD MULTIPLE
     const [selectedFiles, setSelectedFiles] = useState([]);
@@ -192,29 +193,17 @@ function Admin() {
     };
 
     const handleDelete = async (id) => {
-        if (window.confirm('Êtes-vous sûr de vouloir supprimer cette photo ?')) {
-            try {
-                await deletePhoto(id);
-                loadPhotos();
-            } catch (error) {
-                console.error('Erreur lors de la suppression:', error);
-            }
+        try {
+            await deletePhoto(id);
+            setConfirmDeleteId(null);
+            loadPhotos();
+        } catch (error) {
+            console.error('Erreur lors de la suppression:', error);
         }
     };
 
     if (loading) {
-        return (
-            <div style={{
-                height: '100vh',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '1.2rem',
-                color: 'var(--text-light)'
-            }}>
-                Vérification...
-            </div>
-        );
+        return <div className="page-loading">Vérification...</div>;
     }
 
     // PAGE DE LOGIN
@@ -496,12 +485,30 @@ function Admin() {
                                         >
                                             {photo.is_week_photo ? '⭐ Semaine' : 'Semaine'}
                                         </button>
-                                        <button
-                                            onClick={() => handleDelete(photo.id)}
-                                            className="btn-danger"
-                                        >
-                                            🗑️ Supprimer
-                                        </button>
+                                        {confirmDeleteId === photo.id ? (
+                                            <div className="delete-confirm">
+                                                <span>Supprimer ?</span>
+                                                <button
+                                                    onClick={() => handleDelete(photo.id)}
+                                                    className="btn-danger"
+                                                >
+                                                    Oui
+                                                </button>
+                                                <button
+                                                    onClick={() => setConfirmDeleteId(null)}
+                                                    className="btn-secondary"
+                                                >
+                                                    Non
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <button
+                                                onClick={() => setConfirmDeleteId(photo.id)}
+                                                className="btn-danger"
+                                            >
+                                                🗑️ Supprimer
+                                            </button>
+                                        )}
                                     </div>
                                 </article>
                             ))}

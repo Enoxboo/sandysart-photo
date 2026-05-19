@@ -7,9 +7,8 @@ User-agent: *
 # Pages INTERDITES (ne pas indexer)
 Disallow: /admin
 Disallow: /admin/*
-Disallow: /uploads/
 
-# Tout le reste est autorisé
+# Tout le reste est autorisé (les photos /uploads/ sont indexables pour Google Images)
 Allow: /
 
 # Localisation du sitemap (aide Google à trouver toutes les pages)

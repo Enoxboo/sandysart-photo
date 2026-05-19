@@ -87,19 +87,18 @@ function Gallery() {
         setLightboxIndex((prev) => (prev === photos.length - 1 ? 0 : prev + 1));
     };
 
-    // Keyboard navigation
+    // Keyboard navigation — inline logic avoids stale closure on photos.length
     useEffect(() => {
         const handleKeyPress = (e) => {
             if (!lightboxOpen) return;
-
             if (e.key === 'Escape') closeLightbox();
-            if (e.key === 'ArrowLeft') goToPrevious();
-            if (e.key === 'ArrowRight') goToNext();
+            if (e.key === 'ArrowLeft') setLightboxIndex((prev) => (prev === 0 ? photos.length - 1 : prev - 1));
+            if (e.key === 'ArrowRight') setLightboxIndex((prev) => (prev === photos.length - 1 ? 0 : prev + 1));
         };
 
         window.addEventListener('keydown', handleKeyPress);
         return () => window.removeEventListener('keydown', handleKeyPress);
-    }, [lightboxOpen, lightboxIndex]);
+    }, [lightboxOpen, photos.length]);
 
     // Animations au scroll
     useEffect(() => {
@@ -140,8 +139,8 @@ function Gallery() {
 
     if (error) {
         return (
-            <div className="container" style={{ paddingTop: '100px' }}>
-                <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>
+            <div className="container page-error-container">
+                <p className="page-error-message">{error}</p>
             </div>
         );
     }

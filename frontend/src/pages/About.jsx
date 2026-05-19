@@ -1,6 +1,6 @@
 import './About.css';
+import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
-import { getEmail, getPhone, getPhoneTel } from '../utils/contact';
 
 function About() {
     return (
@@ -84,35 +84,35 @@ function About() {
                                 <ul className="specialties-list">
                                     <li className="specialty-item">
                                         <h4>
-                                            <span className="specialty-icon">🤰</span>
+                                            <span className="specialty-icon" aria-hidden="true">🤰</span>
                                             Photographie de grossesse
                                         </h4>
                                         <p>Célébrez l'attente avec des photos pleines de douceur et d'émotion</p>
                                     </li>
                                     <li className="specialty-item">
                                         <h4>
-                                            <span className="specialty-icon">👶</span>
+                                            <span className="specialty-icon" aria-hidden="true">👶</span>
                                             Nouveau-nés
                                         </h4>
                                         <p>Capturez les premiers jours de votre bébé avec des clichés tendres et intemporels</p>
                                     </li>
                                     <li className="specialty-item">
                                         <h4>
-                                            <span className="specialty-icon">👨‍👩‍👧‍👦</span>
+                                            <span className="specialty-icon" aria-hidden="true">👨‍👩‍👧‍👦</span>
                                             Famille
                                         </h4>
                                         <p>Des séances conviviales pour immortaliser votre bonheur familial</p>
                                     </li>
                                     <li className="specialty-item">
                                         <h4>
-                                            <span className="specialty-icon">💍</span>
+                                            <span className="specialty-icon" aria-hidden="true">💍</span>
                                             Mariage
                                         </h4>
                                         <p>Racontez l'histoire de votre plus beau jour en images</p>
                                     </li>
                                     <li className="specialty-item">
                                         <h4>
-                                            <span className="specialty-icon">👤</span>
+                                            <span className="specialty-icon" aria-hidden="true">👤</span>
                                             Portraits
                                         </h4>
                                         <p>Des portraits qui capturent votre essence et votre personnalité unique</p>
@@ -153,20 +153,9 @@ function About() {
                             Envie de réserver une séance ou simplement discuter de votre projet ?
                             N'hésitez pas à me contacter !
                         </p>
-                        <div className="contact-info">
-                            <div className="contact-item">
-                                <span className="contact-icon">📧</span>
-                                <a href={`mailto:${getEmail()}`}>{getEmail()}</a>
-                            </div>
-                            <div className="contact-item">
-                                <span className="contact-icon">📱</span>
-                                <a href={`tel:${getPhoneTel()}`}>{getPhone()}</a>
-                            </div>
-                            <div className="contact-item">
-                                <span className="contact-icon">📍</span>
-                                <span>Basée au 203 rue des vieilles vignes - 31810 Le Vernet</span>
-                            </div>
-                        </div>
+                        <Link to="/contact" className="btn">
+                            Me contacter
+                        </Link>
                     </section>
 
                 </div>

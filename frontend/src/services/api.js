@@ -121,4 +121,11 @@ export const deletePhoto = async (id) => {
     return response.data;
 };
 
+// ============ CONTACT ============
+
+export const sendContactMessage = async (data) => {
+    const response = await api.post('/contact', data);
+    return response.data;
+};
+
 export default api;

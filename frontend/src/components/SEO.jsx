@@ -11,7 +11,7 @@ import {useLocation} from 'react-router-dom';
 function SEO({
                  title,
                  description,
-                 image = '/og-image.jpg',
+                 image = '/about.webp',
                  type = 'website'
              }) {
     const location = useLocation();
@@ -89,7 +89,16 @@ function SEO({
         // === BALISES SPÉCIFIQUES POUR LE SEO LOCAL ===
         updateMetaTag('geo.region', 'FR-31', false);
         updateMetaTag('geo.placename', 'Le Vernet', false);
-        updateMetaTag('geo.position', '43.4027;1.4369', false); // Coordonnées approximatives du Vernet
+        updateMetaTag('geo.position', '43.4027;1.4369', false);
+
+        // === CANONICAL ===
+        let canonical = document.querySelector('link[rel="canonical"]');
+        if (!canonical) {
+            canonical = document.createElement('link');
+            canonical.setAttribute('rel', 'canonical');
+            document.head.appendChild(canonical);
+        }
+        canonical.setAttribute('href', currentUrl);
 
     }, [title, description, fullTitle, currentUrl, fullImageUrl, type, siteInfo.name, siteInfo.locale]);
 

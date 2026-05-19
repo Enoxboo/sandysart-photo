@@ -212,6 +212,66 @@ section {
 }
 
 /* ============================================
+   ACCESSIBILITÉ
+   ============================================ */
+
+/* Lien "Aller au contenu" pour les utilisateurs clavier */
+.skip-link {
+    position: absolute;
+    top: -100%;
+    left: 0;
+    z-index: 10000;
+    padding: 0.75rem 1.5rem;
+    background: var(--accent);
+    color: var(--white);
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: top 0.2s;
+}
+
+.skip-link:focus {
+    top: 0;
+    outline: 3px solid var(--primary);
+    outline-offset: 2px;
+}
+
+/* Focus visible sur tous les éléments interactifs */
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+}
+
+/* Supprimer l'outline par défaut uniquement au clic (pas au clavier) */
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* ============================================
+   ÉTATS DE CHARGEMENT / ERREUR
+   ============================================ */
+
+.page-loading {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: var(--text-light);
+}
+
+.page-error-container {
+    padding-top: 100px;
+}
+
+.page-error-message {
+    color: #c0392b;
+    text-align: center;
+}
+
+/* ============================================
    UTILITAIRES
    ============================================ */
 

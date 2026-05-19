@@ -120,16 +120,6 @@ function RGPD() {
                         </p>
                     </section>
 
-                    {/* Cookies */}
-                    <section className="rgpd-section fade-in">
-                        <h2>Statistiques et mesures d'audience</h2>
-                        <p>
-                            Des cookies enregistrent votre navigation à des fins statistiques. Ils me permettent par
-                            exemple de mesurer la fréquentation de mon site et d'analyser votre parcours sur celui-ci
-                            avant de vous offrir une meilleure expérience.
-                        </p>
-                    </section>
-
                     {/* Mentions légales */}
                     <section className="rgpd-section fade-in" id="mentions">
                         <h2>Mentions légales</h2>

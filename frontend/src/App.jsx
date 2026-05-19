@@ -12,8 +12,9 @@ import NotFound from './pages/NotFound';
 function App() {
     return (
         <BrowserRouter>
+            <a href="#main-content" className="skip-link">Aller au contenu principal</a>
             <Header/>
-            <main>
+            <main id="main-content">
                 <Routes>
                     <Route path="/" element={<Home/>}/>
                     <Route path="/gallery" element={<Gallery/>}/>

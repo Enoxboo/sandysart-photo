@@ -81,24 +81,13 @@ function Home() {
     }, [loading]);
 
     if (loading) {
-        return (
-            <div style={{
-                height: '100vh',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '1.2rem',
-                color: 'var(--text-light)'
-            }}>
-                Chargement...
-            </div>
-        );
+        return <div className="page-loading">Chargement...</div>;
     }
 
     if (error) {
         return (
-            <div className="container" style={{ paddingTop: '100px' }}>
-                <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>
+            <div className="container page-error-container">
+                <p className="page-error-message">{error}</p>
             </div>
         );
     }
@@ -122,6 +111,7 @@ function Home() {
                                 <img
                                     src={`/uploads/${photo.filename}`}
                                     alt={photo.title || 'Photo portfolio'}
+                                    fetchpriority={index === 0 ? 'high' : 'low'}
                                 />
                             </div>
                         ))}
@@ -139,10 +129,12 @@ function Home() {
                         {carouselPhotos.length > 1 && (
                             <div className="carousel-indicators">
                                 {carouselPhotos.map((_, index) => (
-                                    <div
+                                    <button
                                         key={index}
                                         className={`carousel-indicator ${index === currentSlide ? 'active' : ''}`}
                                         onClick={() => goToSlide(index)}
+                                        aria-label={`Slide ${index + 1}`}
+                                        aria-current={index === currentSlide ? 'true' : undefined}
                                     />
                                 ))}
                             </div>
@@ -221,8 +213,8 @@ function Home() {
                         Réservez votre séance photo et créons ensemble des souvenirs
                         qui dureront toute une vie.
                     </p>
-                    <Link to="/about" className="btn">
-                        En savoir plus
+                    <Link to="/contact" className="btn">
+                        Me contacter
                     </Link>
                 </div>
             </section>
