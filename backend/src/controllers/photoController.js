@@ -104,8 +104,17 @@ exports.uploadMultiplePhotos = asyncHandler(async (req, res) => {
             // Déplacer l'image optimisée vers uploads/
             fs.renameSync(optimizedTempPath, finalPath);
 
-            // Supprimer l'original du dossier temp/
-            fs.unlinkSync(tempPath);
+            // Supprimer l'original du dossier temp/. Non bloquant : sur
+            // certains systèmes de fichiers (Windows notamment), le handle
+            // de lecture de sharp peut se libérer avec un léger délai après
+            // la résolution de toFile(), causant un EBUSY transitoire. Le
+            // fichier final est déjà en place, donc on ne fait pas échouer
+            // l'upload pour un résidu temporaire non supprimé.
+            try {
+                fs.unlinkSync(tempPath);
+            } catch (unlinkErr) {
+                console.warn('⚠️  Impossible de supprimer le fichier temp original:', unlinkErr.message);
+            }
 
             // Corriger les permissions
             fs.chmodSync(finalPath, 0o664);
@@ -183,7 +192,12 @@ exports.createPhoto = asyncHandler(async (req, res) => {
             .jpeg({quality: 85})
             .toFile(optimizedPath);
 
-        fs.unlinkSync(originalPath);
+        // Non bloquant — voir le commentaire équivalent dans uploadMultiplePhotos
+        try {
+            fs.unlinkSync(originalPath);
+        } catch (unlinkErr) {
+            console.warn('⚠️  Impossible de supprimer le fichier temp original:', unlinkErr.message);
+        }
 
         const stmt = db.prepare(`
             INSERT INTO photos (filename, original_name, title, description, tags)
