@@ -128,16 +128,17 @@ Je n'ai pas ajouté de suite de tests dans cette session : un premier harnais de
 
 ## Corrections appliquées dans cette session
 
-- [x] `security: retirer les tarballs de déploiement du suivi git et gitignore *.tar.gz` — retire `backend/backend.tar.gz` (contenant le `.env.production` compromis) et `frontend/frontend.tar.gz` du tracking futur.
-- [x] `fix: corriger les erreurs ESLint no-unused-vars dans Admin.jsx`
-- [x] `fix: corriger les dépendances manquantes des hooks useEffect (Gallery, SEO)`
-- [x] `security: ajouter .dockerignore au backend`
-- [x] `security: ajouter helmet pour les headers de sécurité HTTP`
-- [x] `chore: npm audit fix (backend) — correctifs non cassants`
-- [x] `chore: npm audit fix (frontend) — correctifs non cassants`
-- [x] `perf: compresser les icônes PNG surdimensionnées`
+Dans l'ordre chronologique (`git log --oneline b9c1eb0..HEAD`, du plus ancien au plus récent) :
 
-(Cette liste est mise à jour au fur et à mesure — voir les commits git pour le détail exact.)
+- [x] `9e2ca82` `docs: add autonomous audit report (AUDIT.md)`
+- [x] `7412d7d` `security: stop tracking deployment tarballs containing leaked prod secrets` — retire `backend/backend.tar.gz` et `frontend/frontend.tar.gz` du suivi git, ajoute `*.tar.gz` à `.gitignore`. Fichiers locaux conservés sur disque.
+- [x] `e643912` `fix: resolve ESLint errors and React hook dependency warnings` — `Admin.jsx` (2 erreurs `no-unused-vars`), `Gallery.jsx` et `SEO.jsx` (dépendances manquantes des `useEffect`). Vérifié avec `npm run lint` (0 problème) et `npm run build`.
+- [x] `77a7fd1` `security: add backend .dockerignore to keep secrets out of the image` — empêche `.env`, `node_modules`, `photos.db`, `uploads/` de finir dans l'image Docker.
+- [x] `41d6078` `security: add helmet for baseline HTTP security headers` — headers `X-Content-Type-Options`, `X-Frame-Options`, `HSTS`, `Referrer-Policy`, etc. CSP volontairement désactivée (serveur API/fichiers statiques, pas de HTML applicatif). Vérifié : démarrage serveur + headers observés sur une requête réelle.
+- [x] `a55471a` `chore: apply non-breaking npm audit fixes (backend)` — corrige `multer`, `path-to-regexp`, `qs`. `sharp` laissé de côté (bump majeur nécessaire).
+- [x] `4fb82c4` `chore: apply non-breaking npm audit fixes (frontend)` — corrige `axios`, `follow-redirects`, `form-data`, `react-router`. **0 vulnérabilité restante côté frontend.** Vérifié : lint + build.
+- [x] `d959f44` `perf: recompress oversized PNG icons` — `android-chrome-512x512.png` 424 Ko → 107 Ko, `apple-touch-icon.png` 62 Ko → 18 Ko. Recompression lossless (sharp), dimensions/format identiques, vérifié visuellement.
+- [x] `beb3683` `docs: add backend/.env.example` — documente les variables réellement lues par le code (`PORT`, `NODE_ENV`, `JWT_SECRET`, `ADMIN_USERNAME`, `ADMIN_PASSWORD_HASH`), placeholders uniquement.
 
 ---
 
@@ -176,4 +177,34 @@ Ces points sont **volontairement non traités automatiquement** car ambigus, ris
 
 ## Résumé de fin de session
 
-*(complété à la fin de la Phase 3, voir plus bas)*
+**Branche :** `audit-auto-20260722` (9 commits au-dessus de `dev` à `b9c1eb0`, non poussée — reste locale).
+
+### Ce qui a été fait
+1. Audit complet écrit dans ce fichier (sécurité, perf, qualité, a11y/SEO, tests).
+2. **Trouvaille critique** : secrets de production (`JWT_SECRET`, hash du mot de passe admin) commités
+   dans `backend/backend.tar.gz` et déjà présents sur `origin/dev` (GitHub). Le tarball a été retiré du
+   suivi git, mais **le secret reste dans l'historique** et **doit être considéré comme compromis**.
+3. 8 corrections autonomes appliquées, chacune dans un commit atomique, chacune vérifiée
+   (lint, build, ou démarrage serveur + test manuel selon le cas) avant commit :
+   - Retrait des tarballs du tracking git + `.gitignore`
+   - Fix des erreurs/warnings ESLint (2 erreurs, 2 warnings → 0)
+   - `.dockerignore` backend (secrets ne fuitent plus dans l'image Docker)
+   - `helmet` pour les headers de sécurité HTTP
+   - `npm audit fix` non cassant sur backend (3 CVE corrigées, 1 restante nécessitant un bump majeur de `sharp`)
+   - `npm audit fix` non cassant sur frontend (4 CVE corrigées → 0 vulnérabilité restante)
+   - Recompression lossless des icônes PNG surdimensionnées (−75 % et −70 %)
+   - `backend/.env.example` ajouté (absent jusqu'ici)
+
+### Ce qu'il reste à faire (voir "À valider avec Matteo" pour le détail complet)
+- **Urgent — rotation des secrets de prod** (`JWT_SECRET`, mot de passe admin) sur le serveur live.
+- Décision sur la purge de l'historique git (nécessite un `git push --force`).
+- Migration JWT → cookie `httpOnly` (plan déjà écrit dans `frontend/CLAUDE.md`).
+- Implémentation de l'endpoint `POST /api/contact` (le formulaire de contact échoue silencieusement).
+- `sharp` → 0.35.x (breaking) pour corriger la dernière CVE backend.
+- Pagination de l'API photos, `srcset`/images responsives, auto-hébergement des polices.
+- Rate limiting général sur `/api/photos/*`.
+- Mise en place d'une suite de tests (0 % de couverture actuellement).
+
+### Ce qui attend ta validation avant tout déploiement
+Ne merge/déploie pas cette branche sans avoir traité le point 1 (rotation des secrets) — sinon le nouveau
+`.env` de prod resterait potentiellement aligné avec un secret déjà exposé publiquement.
