@@ -6,7 +6,7 @@
 const jwt = require('jsonwebtoken');
 
 /**
- * Verify JWT token from request authorization header
+ * Verify JWT token from the httpOnly session cookie
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  * @param {Function} next - Express next middleware function

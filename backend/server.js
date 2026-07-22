@@ -63,8 +63,15 @@ process.on('uncaughtException', (error) => {
     process.exit(1);
 });
 
-app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
-    console.log(`📸 Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`🔗 Health check: http://localhost:${PORT}/api/health`);
-});
+// Ne démarre le serveur HTTP que si ce fichier est exécuté directement
+// (`node server.js`). Quand il est importé (ex: tests avec supertest),
+// on récupère juste `app` sans ouvrir de port.
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`🚀 Server running on http://localhost:${PORT}`);
+        console.log(`📸 Environment: ${process.env.NODE_ENV || 'development'}`);
+        console.log(`🔗 Health check: http://localhost:${PORT}/api/health`);
+    });
+}
+
+module.exports = app;

@@ -30,9 +30,14 @@ const photosLimiter = rateLimit({
 router.use(photosLimiter);
 
 // Multer storage configuration
+const tempDir = path.join(__dirname, '../../uploads/temp');
+// uploads/ est gitignoré : sur un clone fraîchement cloné (ou en CI), le
+// dossier n'existe pas encore et multer échoue silencieusement à l'écriture.
+fs.mkdirSync(tempDir, {recursive: true});
+
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/temp/');
+        cb(null, tempDir);
     },
     filename: (req, file, cb) => {
         const filename = `${Date.now()}-${Math.round(Math.random() * 1E9)}${path.extname(file.originalname)}`;
