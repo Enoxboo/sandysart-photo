@@ -26,11 +26,23 @@ a pu les récupérer).
 - [x] Retiré `backend/backend.tar.gz` et `frontend/frontend.tar.gz` du suivi git (`git rm --cached`)
 - [x] Ajouté `*.tar.gz` à `.gitignore` pour empêcher la récidive
 
-**Ce que je N'AI PAS fait (nécessite ton action) — voir section "À valider avec Matteo" :**
-- Purger le blob de l'historique git (nécessite `git filter-repo`/BFG + `git push --force`, opération
-  destructive interdite par les garde-fous sans ton accord explicite)
-- **Faire tourner (rotate) `JWT_SECRET` et le mot de passe admin sur le serveur de prod** — je n'ai pas
-  accès au serveur live et je n'ai pas le droit de le redéployer
+**Mise à jour 2026-07-22 (session 2) — historique purgé :**
+- [x] `git filter-repo` a retiré définitivement `backend/backend.tar.gz`, `frontend/frontend.tar.gz`
+  **et** `backend/.env.production` (fichier vide trouvé en cherchant plus large, sans contenu sensible)
+  de tout l'historique des branches `dev`, `main`, `style` et `audit-auto-20260722`.
+- [x] Vérifié avec `git log --branches --full-history -- '*.tar.gz' 'backend/.env.production'` → aucun résultat.
+- [x] Tags de sauvegarde créés avant réécriture : `backup-before-purge-20260722-{dev,main,style,audit-auto-20260722}`
+  (locaux uniquement, non poussés — pointent vers l'historique original si besoin de comparer).
+- [x] `git push --force-with-lease` effectué sur `dev`, `main` et `style` — **l'historique sur GitHub a été
+  réécrit**. Les anciens SHA (`b9c1eb0`, `d74096b`, `51eecee`, etc.) n'existent plus sur les branches distantes.
+
+**⚠️ Ce que la purge ne fait PAS :**
+- GitHub peut garder en cache les anciens objets (accessibles par SHA direct) pendant un certain temps avant
+  son propre garbage collection. Toute personne ayant déjà cloné/forké le repo avant la purge a toujours
+  l'ancien historique en local.
+- **La purge ne remplace pas la rotation des secrets.** `JWT_SECRET` et le hash du mot de passe admin ont été
+  exposés publiquement pendant plusieurs mois avant cette purge — ils doivent toujours être régénérés sur le
+  serveur de production. Je n'ai pas accès au serveur live, cette action reste à faire manuellement.
 
 ---
 
