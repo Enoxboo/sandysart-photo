@@ -3,6 +3,7 @@ require('dotenv').config();
 const db = require('./src/config/database');
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
 const path = require('path');
 const {errorHandler, notFound} = require('./src/middleware/errorHandler');
 const photosRoutes = require('./src/routes/photos');
@@ -10,6 +11,15 @@ const authRoutes = require('./src/routes/auth');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Headers de sécurité HTTP. CSP désactivée : ce serveur ne sert que du
+// JSON et les fichiers statiques d'uploads, pas de HTML applicatif.
+// crossOriginResourcePolicy en "cross-origin" pour ne pas casser le
+// chargement des photos du portfolio si elles sont embarquées ailleurs.
+app.use(helmet({
+    contentSecurityPolicy: false,
+    crossOriginResourcePolicy: {policy: 'cross-origin'},
+}));
 
 // CORS — restreint au domaine de production + localhost en dev
 const allowedOrigins = process.env.NODE_ENV === 'production'
