@@ -12,11 +12,28 @@ const asyncHandler = (fn) => (req, res, next) => {
 };
 
 /**
- * Retrieve all photos
+ * Retrieve photos, paginated via ?page=&limit= query params.
+ * Defaults to page 1 / 24 per page; limit is capped at 1000 (callers that
+ * need the full set, like the admin dashboard, pass a high explicit limit
+ * instead of the API special-casing an "unlimited" mode).
  */
 exports.getAllPhotos = asyncHandler(async (req, res) => {
-    const photos = db.prepare('SELECT * FROM photos ORDER BY upload_date DESC').all();
-    res.json(photos);
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+    const limit = Math.min(1000, Math.max(1, parseInt(req.query.limit, 10) || 24));
+    const offset = (page - 1) * limit;
+
+    const {count: total} = db.prepare('SELECT COUNT(*) as count FROM photos').get();
+    const photos = db.prepare('SELECT * FROM photos ORDER BY upload_date DESC LIMIT ? OFFSET ?').all(limit, offset);
+
+    res.json({
+        photos,
+        pagination: {
+            page,
+            limit,
+            total,
+            totalPages: Math.max(1, Math.ceil(total / limit)),
+        },
+    });
 });
 
 /**

@@ -3,10 +3,15 @@ import { getAllPhotos, getPhotosByTag } from '../services/api';
 import './Gallery.css';
 import SEO from "../components/SEO.jsx";
 
+const PAGE_SIZE = 24;
+const INITIAL_PAGINATION = { page: 1, limit: PAGE_SIZE, total: 0, totalPages: 1 };
+
 function Gallery() {
     const [photos, setPhotos] = useState([]);
-    const [allPhotos, setAllPhotos] = useState([]);
+    const [pagination, setPagination] = useState(INITIAL_PAGINATION);
+    const [totalCount, setTotalCount] = useState(0);
     const [loading, setLoading] = useState(true);
+    const [loadingMore, setLoadingMore] = useState(false);
     const [error, setError] = useState(null);
     const [selectedTag, setSelectedTag] = useState('all');
     const [availableTags, setAvailableTags] = useState([]);
@@ -27,13 +32,20 @@ function Gallery() {
         setAvailableTags(Array.from(tagsSet).sort());
     }, []);
 
-    const loadAllPhotos = useCallback(async () => {
+    // Chargement initial : le vocabulaire de tags nécessite de connaître
+    // l'ensemble du portfolio, mais la grille affichée elle-même est
+    // paginée pour ne pas tout transférer à chaque visite.
+    const loadInitial = useCallback(async () => {
         try {
             setLoading(true);
-            const data = await getAllPhotos();
-            setPhotos(data);
-            setAllPhotos(data);
-            extractTags(data);
+            const [tagsResponse, firstPage] = await Promise.all([
+                getAllPhotos({ limit: 1000 }),
+                getAllPhotos({ page: 1, limit: PAGE_SIZE }),
+            ]);
+            extractTags(tagsResponse.photos);
+            setTotalCount(tagsResponse.pagination.total);
+            setPhotos(firstPage.photos);
+            setPagination(firstPage.pagination);
         } catch (err) {
             setError('Erreur lors du chargement des photos');
             console.error(err);
@@ -43,13 +55,44 @@ function Gallery() {
     }, [extractTags]);
 
     useEffect(() => {
-        loadAllPhotos();
-    }, [loadAllPhotos]);
+        loadInitial();
+    }, [loadInitial]);
+
+    const loadMorePhotos = async () => {
+        if (loadingMore || pagination.page >= pagination.totalPages) return;
+
+        try {
+            setLoadingMore(true);
+            const nextPage = pagination.page + 1;
+            const { photos: newPhotos, pagination: newPagination } = await getAllPhotos({
+                page: nextPage,
+                limit: pagination.limit,
+            });
+            setPhotos(prev => [...prev, ...newPhotos]);
+            setPagination(newPagination);
+        } catch (err) {
+            setError('Erreur lors du chargement des photos supplémentaires');
+            console.error(err);
+        } finally {
+            setLoadingMore(false);
+        }
+    };
 
     const filterByTag = async (tag) => {
         setSelectedTag(tag);
+
         if (tag === 'all') {
-            setPhotos(allPhotos);
+            try {
+                setLoading(true);
+                const firstPage = await getAllPhotos({ page: 1, limit: PAGE_SIZE });
+                setPhotos(firstPage.photos);
+                setPagination(firstPage.pagination);
+            } catch (err) {
+                setError('Erreur lors du chargement des photos');
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
             return;
         }
 
@@ -57,6 +100,7 @@ function Gallery() {
             setLoading(true);
             const data = await getPhotosByTag(tag);
             setPhotos(data);
+            setPagination(INITIAL_PAGINATION);
         } catch (err) {
             setError('Erreur lors du filtrage');
             console.error(err);
@@ -175,7 +219,7 @@ function Gallery() {
                                 className={selectedTag === 'all' ? 'filter-btn active' : 'filter-btn'}
                                 onClick={() => filterByTag('all')}
                             >
-                                Tout voir ({allPhotos.length})
+                                Tout voir ({totalCount})
                             </button>
                             {availableTags.map((tag) => (
                                 <button
@@ -205,7 +249,9 @@ function Gallery() {
                         <>
                             <div className="results-info">
                                 <p className="results-count">
-                                    <strong>{photos.length}</strong> {photos.length > 1 ? 'photographies' : 'photographie'}
+                                    <strong>{photos.length}</strong>
+                                    {selectedTag === 'all' && pagination.totalPages > 1 && ` / ${totalCount}`}
+                                    {' '}{photos.length > 1 ? 'photographies' : 'photographie'}
                                     {selectedTag !== 'all' && ` · ${selectedTag}`}
                                 </p>
                             </div>
@@ -240,6 +286,18 @@ function Gallery() {
                                     </article>
                                 ))}
                             </div>
+
+                            {selectedTag === 'all' && pagination.page < pagination.totalPages && (
+                                <div className="gallery-load-more">
+                                    <button
+                                        className="btn"
+                                        onClick={loadMorePhotos}
+                                        disabled={loadingMore}
+                                    >
+                                        {loadingMore ? 'Chargement...' : 'Charger plus de photos'}
+                                    </button>
+                                </div>
+                            )}
                         </>
                     )}
                 </div>

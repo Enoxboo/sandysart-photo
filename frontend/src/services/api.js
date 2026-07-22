@@ -45,11 +45,14 @@ export const verifyToken = async () => {
 // ============ PHOTOS ============
 
 /**
- * Retrieves all photos.
- * @returns {Promise<Array>} List of all photos
+ * Retrieves photos, paginated.
+ * @param {Object} [params] - Pagination params
+ * @param {number} [params.page] - 1-indexed page number (default 1)
+ * @param {number} [params.limit] - Items per page (default 24, max 1000)
+ * @returns {Promise<{photos: Array, pagination: {page: number, limit: number, total: number, totalPages: number}}>}
  */
-export const getAllPhotos = async () => {
-    const response = await api.get('/photos');
+export const getAllPhotos = async (params = {}) => {
+    const response = await api.get('/photos', { params });
     return response.data;
 };
 

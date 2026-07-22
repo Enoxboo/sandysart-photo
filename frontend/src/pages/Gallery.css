@@ -120,6 +120,12 @@
     column-gap: 1.5rem;
 }
 
+.gallery-load-more {
+    display: flex;
+    justify-content: center;
+    margin-top: 2.5rem;
+}
+
 .gallery-item {
     break-inside: avoid;
     margin-bottom: 1.5rem;

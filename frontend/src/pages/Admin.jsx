@@ -90,7 +90,9 @@ function Admin() {
 
     const loadPhotos = useCallback(async () => {
         try {
-            const data = await getAllPhotos();
+            // Limite haute : le dashboard admin gère l'intégralité du
+            // portfolio, pas une vue paginée comme la galerie publique.
+            const { photos: data } = await getAllPhotos({ limit: 1000 });
             setPhotos(data);
         } catch (error) {
             console.error('Erreur lors du chargement des photos:', error);
