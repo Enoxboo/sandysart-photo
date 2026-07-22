@@ -278,8 +278,64 @@ ci-dessus.
   l'upload, extension de fichier incohérente, dossier `uploads/temp/` jamais créé).
 
 ### Ce qu'il reste à faire
-- **Rotation de `JWT_SECRET` et du mot de passe admin sur le serveur de production** (seul point bloquant).
-- Configurer `CONTACT_EMAIL_PASSWORD` en prod pour activer le formulaire de contact.
+- Configurer `CONTACT_EMAIL_PASSWORD` (et `CONTACT_EMAIL`) en prod pour activer le formulaire de contact.
 - Nice-to-have non traités (mineurs, pas de blocage) : image OG dédiée 1200×630, mise à jour du
   `sitemap.xml` à chaque changement de contenu, validation d'entrée plus stricte sur les métadonnées photo,
   déplacement de `debug_uploads.js` hors de la racine backend.
+
+---
+
+## Session 3 (2026-07-22) — déploiement en production
+
+Matteo a fait tourner `JWT_SECRET` et le mot de passe admin sur le Pi (rotation confirmée). Déploiement
+effectué en direct sur `rpi-server` (Tailscale, `100.107.48.106`) — le site n'est **pas** déployé via git :
+c'est une copie manuelle des fichiers dans `~/infra/sites/photographe/{backend,frontend}`, backend lancé
+via systemd (`sandysart-backend.service`), nginx sert le frontend statique + proxy `/api` + alias `/uploads`.
+
+### Blocage trouvé et résolu : pas de HTTPS
+
+Le site tournait entièrement en HTTP. Or le cookie JWT `httpOnly` posé par le code de cette session a
+`secure: true` en production — un navigateur refuse un cookie `Secure` sur une connexion non chiffrée,
+ce qui aurait cassé la connexion admin silencieusement après déploiement.
+
+Mis en place avant tout déploiement de code :
+- Certificat Let's Encrypt obtenu via `certbot --nginx` (le challenge HTTP-01 passe par le port 80, déjà
+  ouvert et redirigé par la box). Renouvellement automatique déjà configuré par certbot.
+- Port 443 testé accessible depuis l'extérieur (déjà redirigé côté box, il ne manquait que la conf nginx).
+- Redirection HTTP → HTTPS activée (`certbot install --redirect`) une fois le 443 confirmé fonctionnel,
+  pour ne pas casser le site en HTTP avant que le HTTPS soit joignable.
+- Les 3 autres sites hébergés sur le même nginx (`matteomarquant.com`, `bienetre-admin`, `bienetre-api`)
+  vérifiés non affectés (`nginx -t` + test direct).
+
+### Déploiement
+
+- Sauvegarde créée sur le Pi avant toute modification : `~/infra/sites/photographe-backup-20260722-155822`
+  (code backend, `package*.json`, `photos.db`, frontend complet).
+- Backend : `server.js` + `src/` + `package.json`/`package-lock.json` copiés par `scp`, `npm ci --omit=dev`
+  exécuté sur le Pi (nécessaire pour `sharp`/`better-sqlite3`, modules natifs — impossible de copier
+  `node_modules` depuis Windows, l'archi ARM du Pi doit compiler ses propres binaires).
+  `.env`, `photos.db` et `uploads/` **non touchés**. Service redémarré (`systemctl restart`), migration
+  `has_variants` appliquée automatiquement au boot, vérifiée dans les logs.
+- Frontend : build local (`npm run build`) puis copie du contenu de `dist/` sur le Pi ; anciens chunks
+  JS/CSS non référencés nettoyés après coup.
+- Vérifié en HTTPS réel (`https://sandysartphotographies.com`) : page d'accueil, route SPA `/gallery`,
+  polices auto-hébergées, icônes compressées, `GET /api/photos` paginé (51 photos réelles en base,
+  intactes), `POST /api/contact` répond 400 (existe, validation active), headers `helmet` présents,
+  `POST /auth/login` avec mauvais identifiants → 401 propre.
+
+### Trouvaille bonus en cours de déploiement
+
+Les logs systemd de **l'ancien** code (encore actif avant mon redémarrage) affichaient le hash bcrypt du
+mot de passe admin en clair à chaque tentative de connexion (`console.log` de debug ajouté directement sur
+le serveur, jamais présent dans le dépôt git). Confirmé absent du nouveau code déployé — plus aucune fuite
+dans les logs après redémarrage. Les anciennes lignes de log restent dans le journal systemd jusqu'à sa
+rotation naturelle ; pas d'action nécessaire au-delà (le hash seul, sans accès au serveur, n'est pas
+exploitable pour se connecter — seulement pour du brute-force hors-ligne si quelqu'un a lu ces logs).
+
+### État final
+
+Le site tourne sur le nouveau code, en HTTPS, avec les secrets tournés. Seul point restant : Matteo doit
+lui-même se connecter à `/admin` avec les nouveaux identifiants pour confirmer que le flux de login
+fonctionne de bout en bout côté navigateur (vérifié côté serveur uniquement depuis cette session), et
+ajouter `CONTACT_EMAIL`/`CONTACT_EMAIL_PASSWORD` dans `backend/.env` sur le Pi s'il veut activer le
+formulaire de contact.
