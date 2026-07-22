@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { getAllPhotos, getPhotosByTag } from '../services/api';
 import './Gallery.css';
 import SEO from "../components/SEO.jsx";
@@ -15,11 +15,19 @@ function Gallery() {
     const [lightboxOpen, setLightboxOpen] = useState(false);
     const [lightboxIndex, setLightboxIndex] = useState(0);
 
-    useEffect(() => {
-        loadAllPhotos();
+    const extractTags = useCallback((photosData) => {
+        const tagsSet = new Set();
+        photosData.forEach(photo => {
+            if (photo.tags) {
+                photo.tags.split(',').forEach(tag => {
+                    tagsSet.add(tag.trim());
+                });
+            }
+        });
+        setAvailableTags(Array.from(tagsSet).sort());
     }, []);
 
-    const loadAllPhotos = async () => {
+    const loadAllPhotos = useCallback(async () => {
         try {
             setLoading(true);
             const data = await getAllPhotos();
@@ -32,19 +40,11 @@ function Gallery() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [extractTags]);
 
-    const extractTags = (photosData) => {
-        const tagsSet = new Set();
-        photosData.forEach(photo => {
-            if (photo.tags) {
-                photo.tags.split(',').forEach(tag => {
-                    tagsSet.add(tag.trim());
-                });
-            }
-        });
-        setAvailableTags(Array.from(tagsSet).sort());
-    };
+    useEffect(() => {
+        loadAllPhotos();
+    }, [loadAllPhotos]);
 
     const filterByTag = async (tag) => {
         setSelectedTag(tag);

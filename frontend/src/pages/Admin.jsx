@@ -64,7 +64,7 @@ function Admin() {
             try {
                 await verifyToken();
                 setIsAuthenticated(true);
-            } catch (error) {
+            } catch {
                 localStorage.removeItem('token');
                 setIsAuthenticated(false);
             }
@@ -80,7 +80,7 @@ function Admin() {
             const data = await login(loginForm.username, loginForm.password);
             localStorage.setItem('token', data.token);
             setIsAuthenticated(true);
-        } catch (error) {
+        } catch {
             setLoginError('Identifiants incorrects');
         }
     };
