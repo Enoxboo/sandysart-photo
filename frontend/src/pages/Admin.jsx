@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { login, verifyToken, getAllPhotos, updatePhoto, deletePhoto } from '../services/api';
+import { login, logout, verifyToken, getAllPhotos, updatePhoto, deletePhoto } from '../services/api';
 import './Admin.css';
 
 async function uploadMultiplePhotos(files, tags, onProgress) {
@@ -13,10 +13,9 @@ async function uploadMultiplePhotos(files, tags, onProgress) {
         formData.append('tags', tags);
     }
 
-    const token = localStorage.getItem('token');
-
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
+        xhr.withCredentials = true;
 
         xhr.upload.addEventListener('progress', (e) => {
             if (e.lengthComputable && onProgress) {
@@ -37,7 +36,6 @@ async function uploadMultiplePhotos(files, tags, onProgress) {
         xhr.addEventListener('abort', () => reject(new Error('Upload annulé')));
 
         xhr.open('POST', '/api/photos/upload-multiple');
-        xhr.setRequestHeader('Authorization', `Bearer ${token}`);
         xhr.send(formData);
     });
 }
@@ -59,17 +57,14 @@ function Admin() {
     const [uploadResults, setUploadResults] = useState(null);
 
     const checkAuth = useCallback(async () => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            try {
-                await verifyToken();
-                setIsAuthenticated(true);
-            } catch {
-                localStorage.removeItem('token');
-                setIsAuthenticated(false);
-            }
+        try {
+            await verifyToken();
+            setIsAuthenticated(true);
+        } catch {
+            setIsAuthenticated(false);
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     }, []);
 
     const handleLogin = async (e) => {
@@ -77,16 +72,19 @@ function Admin() {
         setLoginError('');
 
         try {
-            const data = await login(loginForm.username, loginForm.password);
-            localStorage.setItem('token', data.token);
+            await login(loginForm.username, loginForm.password);
             setIsAuthenticated(true);
         } catch {
             setLoginError('Identifiants incorrects');
         }
     };
 
-    const handleLogout = () => {
-        localStorage.removeItem('token');
+    const handleLogout = async () => {
+        try {
+            await logout();
+        } catch (error) {
+            console.error('Erreur lors de la déconnexion:', error);
+        }
         setIsAuthenticated(false);
     };
 

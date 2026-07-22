@@ -1,31 +1,23 @@
 import axios from 'axios';
 
 /**
- * Axios instance configured with base URL and JWT token interceptor.
- * All requests automatically include the JWT token from localStorage if available.
+ * Axios instance configured with base URL. Auth is handled via an
+ * httpOnly cookie set by the backend, sent automatically on every
+ * request thanks to withCredentials — no token handling in JS.
  */
 const api = axios.create({
     baseURL: '/api',
-});
-
-/**
- * Request interceptor to attach JWT token to all requests.
- */
-api.interceptors.request.use((config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
+    withCredentials: true,
 });
 
 // ============ AUTH ============
 
 /**
- * Authenticates a user with username and password.
+ * Authenticates a user with username and password. On success, the
+ * backend sets an httpOnly session cookie — no token is returned.
  * @param {string} username - User's username
  * @param {string} password - User's password
- * @returns {Promise<Object>} Authentication response with token
+ * @returns {Promise<Object>} Authentication response
  */
 export const login = async (username, password) => {
     const response = await api.post('/auth/login', { username, password });
@@ -33,7 +25,16 @@ export const login = async (username, password) => {
 };
 
 /**
- * Verifies the validity of the current JWT token.
+ * Clears the httpOnly session cookie on the backend.
+ * @returns {Promise<Object>} Logout confirmation
+ */
+export const logout = async () => {
+    const response = await api.post('/auth/logout');
+    return response.data;
+};
+
+/**
+ * Verifies the validity of the current session cookie.
  * @returns {Promise<Object>} Verification response
  */
 export const verifyToken = async () => {
