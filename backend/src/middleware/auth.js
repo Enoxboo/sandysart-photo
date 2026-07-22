@@ -6,15 +6,14 @@
 const jwt = require('jsonwebtoken');
 
 /**
- * Verify JWT token from request authorization header
+ * Verify JWT token from the httpOnly session cookie
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  * @param {Function} next - Express next middleware function
  * @returns {void}
  */
 exports.verifyToken = (req, res, next) => {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+    const token = req.cookies && req.cookies.token;
 
     if (!token) {
         return res.status(401).json({error: 'Access denied. No token provided.'});

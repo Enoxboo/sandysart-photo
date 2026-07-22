@@ -12,6 +12,15 @@ const loginLimiter = rateLimit({
     legacyHeaders: false,
 });
 
+// Options du cookie JWT — httpOnly empêche tout accès en JS (protection XSS),
+// secure exige HTTPS donc désactivé hors production pour permettre le dev local.
+const tokenCookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: 24 * 60 * 60 * 1000, // aligné sur expiresIn: '24h' du JWT
+};
+
 router.post('/login', loginLimiter, async (req, res) => {
     const {username, password} = req.body;
 
@@ -32,9 +41,9 @@ router.post('/login', loginLimiter, async (req, res) => {
 
         const token = generateToken(username);
 
+        res.cookie('token', token, tokenCookieOptions);
         res.json({
             message: 'Login successful',
-            token: token,
             username: username
         });
     } catch (error) {
@@ -48,6 +57,11 @@ router.get('/verify', verifyToken, (req, res) => {
         valid: true,
         username: req.user.username
     });
+});
+
+router.post('/logout', (req, res) => {
+    res.clearCookie('token', tokenCookieOptions);
+    res.json({ok: true});
 });
 
 module.exports = router;

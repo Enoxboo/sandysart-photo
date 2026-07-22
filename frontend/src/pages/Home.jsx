@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { getWeekPhotos, getHeroPhotos } from '../services/api';
+import { getSrcSet } from '../utils/images';
 import './Home.css';
 import SEO from '../components/SEO';
 
@@ -110,6 +111,8 @@ function Home() {
                             >
                                 <img
                                     src={`/uploads/${photo.filename}`}
+                                    srcSet={getSrcSet(photo)}
+                                    sizes="100vw"
                                     alt={photo.title || 'Photo portfolio'}
                                     fetchpriority={index === 0 ? 'high' : 'low'}
                                 />
@@ -189,6 +192,8 @@ function Home() {
                                 >
                                     <img
                                         src={`/uploads/${photo.filename}`}
+                                        srcSet={getSrcSet(photo)}
+                                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                                         alt={photo.title || photo.original_name}
                                         loading="lazy"
                                     />

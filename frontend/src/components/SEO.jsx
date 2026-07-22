@@ -100,7 +100,7 @@ function SEO({
         }
         canonical.setAttribute('href', currentUrl);
 
-    }, [title, description, fullTitle, currentUrl, fullImageUrl, type, siteInfo.name, siteInfo.locale]);
+    }, [title, description, fullTitle, currentUrl, fullImageUrl, type, siteInfo.name, siteInfo.locale, siteInfo.author]);
 
     // Ce composant ne rend rien visuellement
     return null;

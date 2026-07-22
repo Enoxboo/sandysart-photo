@@ -3,13 +3,25 @@ require('dotenv').config();
 const db = require('./src/config/database');
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
+const cookieParser = require('cookie-parser');
 const path = require('path');
 const {errorHandler, notFound} = require('./src/middleware/errorHandler');
 const photosRoutes = require('./src/routes/photos');
 const authRoutes = require('./src/routes/auth');
+const contactRoutes = require('./src/routes/contact');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Headers de sécurité HTTP. CSP désactivée : ce serveur ne sert que du
+// JSON et les fichiers statiques d'uploads, pas de HTML applicatif.
+// crossOriginResourcePolicy en "cross-origin" pour ne pas casser le
+// chargement des photos du portfolio si elles sont embarquées ailleurs.
+app.use(helmet({
+    contentSecurityPolicy: false,
+    crossOriginResourcePolicy: {policy: 'cross-origin'},
+}));
 
 // CORS — restreint au domaine de production + localhost en dev
 const allowedOrigins = process.env.NODE_ENV === 'production'
@@ -23,6 +35,7 @@ app.use(cors({
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
+app.use(cookieParser());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.get('/api/health', (req, res) => {
@@ -36,6 +49,7 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/photos', photosRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/contact', contactRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
@@ -49,8 +63,15 @@ process.on('uncaughtException', (error) => {
     process.exit(1);
 });
 
-app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
-    console.log(`📸 Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`🔗 Health check: http://localhost:${PORT}/api/health`);
-});
+// Ne démarre le serveur HTTP que si ce fichier est exécuté directement
+// (`node server.js`). Quand il est importé (ex: tests avec supertest),
+// on récupère juste `app` sans ouvrir de port.
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`🚀 Server running on http://localhost:${PORT}`);
+        console.log(`📸 Environment: ${process.env.NODE_ENV || 'development'}`);
+        console.log(`🔗 Health check: http://localhost:${PORT}/api/health`);
+    });
+}
+
+module.exports = app;
