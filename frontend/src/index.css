@@ -1,7 +1,24 @@
 @import './styles/variables.css';
 
-/* Google Fonts - Élégantes */
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+/* Polices auto-hébergées (fichiers variables couvrant chacun toutes les
+   graisses utilisées) — évite l'appel à fonts.googleapis.com à chaque
+   visite, qui envoyait l'IP du visiteur à Google (RGPD) et ajoutait une
+   latence réseau supplémentaire avant l'affichage du texte. */
+@font-face {
+    font-family: 'Cormorant Garamond';
+    font-style: normal;
+    font-weight: 300 700;
+    font-display: swap;
+    src: url('/fonts/cormorant-garamond-variable.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 300 600;
+    font-display: swap;
+    src: url('/fonts/inter-variable.woff2') format('woff2');
+}
 
 /* ============================================
    RESET & BASE
