@@ -9,6 +9,7 @@ const path = require('path');
 const {errorHandler, notFound} = require('./src/middleware/errorHandler');
 const photosRoutes = require('./src/routes/photos');
 const authRoutes = require('./src/routes/auth');
+const contactRoutes = require('./src/routes/contact');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -48,6 +49,7 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/photos', photosRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/contact', contactRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
