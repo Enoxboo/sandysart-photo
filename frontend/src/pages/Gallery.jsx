@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getAllPhotos, getPhotosByTag } from '../services/api';
+import { getSrcSet } from '../utils/images';
 import './Gallery.css';
 import SEO from "../components/SEO.jsx";
 
@@ -266,6 +267,8 @@ function Gallery() {
                                         <div className="gallery-item-image">
                                             <img
                                                 src={`/uploads/${photo.filename}`}
+                                                srcSet={getSrcSet(photo)}
+                                                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                                                 alt={photo.title || photo.original_name}
                                                 loading="lazy"
                                             />
@@ -330,6 +333,8 @@ function Gallery() {
                     <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
                         <img
                             src={`/uploads/${photos[lightboxIndex].filename}`}
+                            srcSet={getSrcSet(photos[lightboxIndex])}
+                            sizes="100vw"
                             alt={photos[lightboxIndex].title || photos[lightboxIndex].original_name}
                             className="lightbox-image"
                         />

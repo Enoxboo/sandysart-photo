@@ -85,6 +85,9 @@ exports.getPhotosByTag = asyncHandler(async (req, res) => {
     res.json(photos);
 });
 
+// Largeurs des variantes responsives générées à l'upload (WebP).
+const VARIANT_WIDTHS = [400, 800, 1600];
+
 /**
  * Upload multiple simplifié (sans titre/description)
  */
@@ -99,27 +102,43 @@ exports.uploadMultiplePhotos = asyncHandler(async (req, res) => {
     const uploadsDir = path.join(__dirname, '../../uploads');
 
     const stmt = db.prepare(`
-        INSERT INTO photos (filename, original_name, tags)
-        VALUES (?, ?, ?)
+        INSERT INTO photos (filename, original_name, tags, has_variants)
+        VALUES (?, ?, ?, ?)
     `);
 
     for (const file of req.files) {
+        // baseName sans extension : sert de préfixe commun à l'image
+        // principale et à ses variantes (ex: 123-456.jpg, 123-456-400w.webp).
+        const baseName = path.basename(file.filename, path.extname(file.filename));
+
         try {
             // Le fichier est déjà dans uploads/temp/ grâce à multer
             const tempPath = file.path;
-            const finalFilename = file.filename;
+            // Toujours .jpg : l'image principale est systématiquement
+            // ré-encodée en JPEG ci-dessous, quel que soit le format source.
+            const finalFilename = `${baseName}.jpg`;
             const finalPath = path.join(uploadsDir, finalFilename);
-
-            // Optimiser l'image avec un nom temporaire différent
-            const optimizedTempPath = tempPath + '.optimized';
 
             await sharp(tempPath)
                 .resize(1920, null, { withoutEnlargement: true, fit: 'inside' })
                 .jpeg({quality: 85})
-                .toFile(optimizedTempPath);
+                .toFile(finalPath);
 
-            // Déplacer l'image optimisée vers uploads/
-            fs.renameSync(optimizedTempPath, finalPath);
+            // Variantes responsives (srcset). Non bloquant : si la génération
+            // échoue, l'image principale reste utilisable, simplement sans
+            // srcset pour cette photo.
+            let hasVariants = 0;
+            try {
+                await Promise.all(VARIANT_WIDTHS.map((width) =>
+                    sharp(tempPath)
+                        .resize(width, null, { withoutEnlargement: true, fit: 'inside' })
+                        .webp({quality: 80})
+                        .toFile(path.join(uploadsDir, `${baseName}-${width}w.webp`))
+                ));
+                hasVariants = 1;
+            } catch (variantErr) {
+                console.warn(`⚠️  Génération des variantes responsives échouée pour ${file.originalname}:`, variantErr.message);
+            }
 
             // Supprimer l'original du dossier temp/. Non bloquant : sur
             // certains systèmes de fichiers (Windows notamment), le handle
@@ -147,7 +166,7 @@ exports.uploadMultiplePhotos = asyncHandler(async (req, res) => {
                 }
             }
 
-            const result = stmt.run(finalFilename, file.originalname, tags || null);
+            const result = stmt.run(finalFilename, file.originalname, tags || null, hasVariants);
 
             results.success.push({
                 id: result.lastInsertRowid,
@@ -309,20 +328,30 @@ exports.deletePhoto = asyncHandler(async (req, res) => {
         throw new AppError('ID invalide', 400, 'INVALID_ID');
     }
 
-    const photo = db.prepare('SELECT filename FROM photos WHERE id = ?').get(id);
+    const photo = db.prepare('SELECT filename, has_variants FROM photos WHERE id = ?').get(id);
 
     if (!photo) {
         throw new AppError('Photo non trouvée', 404, 'PHOTO_NOT_FOUND');
     }
 
-    const filePath = path.join(__dirname, '../../uploads', photo.filename);
-    if (fs.existsSync(filePath)) {
-        try {
-            fs.unlinkSync(filePath);
-        } catch (fsError) {
-            console.error('⚠️  Erreur suppression fichier:', fsError);
-        }
+    const uploadsDir = path.join(__dirname, '../../uploads');
+    const filesToDelete = [photo.filename];
+
+    if (photo.has_variants) {
+        const baseName = path.basename(photo.filename, path.extname(photo.filename));
+        VARIANT_WIDTHS.forEach((width) => filesToDelete.push(`${baseName}-${width}w.webp`));
     }
+
+    filesToDelete.forEach((filename) => {
+        const filePath = path.join(uploadsDir, filename);
+        if (fs.existsSync(filePath)) {
+            try {
+                fs.unlinkSync(filePath);
+            } catch (fsError) {
+                console.error('⚠️  Erreur suppression fichier:', fsError);
+            }
+        }
+    });
 
     db.prepare('DELETE FROM photos WHERE id = ?').run(id);
 

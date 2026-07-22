@@ -32,5 +32,13 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_upload_date ON photos(upload_date);
 `);
 
+// Migration légère : ajoute has_variants aux bases existantes créées avant
+// l'introduction des images responsives (srcset). Indique si des fichiers
+// <basename>-{400,800,1600}w.webp existent à côté de `filename` dans uploads/.
+const photoColumns = db.prepare('PRAGMA table_info(photos)').all();
+if (!photoColumns.some(col => col.name === 'has_variants')) {
+    db.exec('ALTER TABLE photos ADD COLUMN has_variants BOOLEAN DEFAULT 0');
+}
+
 console.log('✅ Database initialized successfully');
 module.exports = db;
